@@ -4,7 +4,7 @@ title = "jploskonka"
 theme = "kiss"
 copyright = "&copy; <a href=\"https://github.com/jploskonka\">jploskonka</a> 2017"
 disqusShortname = "shortname"
-googleAnalytics = ""
+googleAnalytics = "UA-89853504-1"
 # Number of posts per page
 Paginate = 5
 enableRobotsTXT = true 
