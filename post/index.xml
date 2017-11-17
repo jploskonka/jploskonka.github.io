@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; &lt;a href=&#34;https://github.com/jploskonka&#34;&gt;jploskonka&lt;/a&gt; 2017</copyright>
-    <lastBuildDate>Wed, 13 Jan 2016 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 13 Jan 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://jploskonka.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,7 +15,7 @@
     <item>
       <title>Acceptance testing with CodeceptJS</title>
       <link>https://jploskonka.github.io/post/acceptance-testing-with-codecept-js/</link>
-      <pubDate>Wed, 13 Jan 2016 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 13 Jan 2017 00:00:00 +0000</pubDate>
       
       <guid>https://jploskonka.github.io/post/acceptance-testing-with-codecept-js/</guid>
       <description>In this tutorial I&amp;rsquo;m gonna look at CodeceptJS with NightmareJS backend as a tool for writing acceptance tests for TodoMVC application. After completing it you should be familiar with basic codecept concepts and be able to use it in your own projects.
