@@ -1,6 +1,6 @@
-baseurl = "https://www.example.com"
+baseurl = "https://jploskonka.github.io"
 languageCode = "en"
-title = "code'n'roll.it"
+title = "jploskonka"
 theme = "kiss"
 copyright = "&copy; <a href=\"https://github.com/jploskonka\">jploskonka</a> 2017"
 disqusShortname = "shortname"
@@ -8,10 +8,6 @@ googleAnalytics = ""
 # Number of posts per page
 Paginate = 5
 enableRobotsTXT = true 
-
-
-[params.assets]
-customCSS = ["css/custom.css"]
 
 [params.info]
 adsense = "" # Adsense ID (ID only, without ca-pub-)
