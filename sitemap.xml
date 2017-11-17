@@ -3,23 +3,23 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://www.example.com/post/acceptance-testing-with-codecept-js/</loc>
+    <loc>https://jploskonka.github.io/post/acceptance-testing-with-codecept-js/</loc>
     <lastmod>2016-01-13T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://www.example.com/post/</loc>
+    <loc>https://jploskonka.github.io/post/</loc>
     <lastmod>2016-01-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://www.example.com/tags/</loc>
+    <loc>https://jploskonka.github.io/tags/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://www.example.com/</loc>
+    <loc>https://jploskonka.github.io/</loc>
     <lastmod>2016-01-13T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
