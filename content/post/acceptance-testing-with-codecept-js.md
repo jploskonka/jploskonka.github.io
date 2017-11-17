@@ -1,7 +1,7 @@
 ---
 title: Acceptance testing with CodeceptJS
 aliases: ['/acceptance-testing-with-codecept-js']
-date: 2016-01-13
+date: 2017-01-13
 ---
 
 In this tutorial I'm gonna look at CodeceptJS with NightmareJS backend as a tool
