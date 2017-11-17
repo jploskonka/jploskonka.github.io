@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<title>Acceptance testing with CodeceptJS | code&#39;n&#39;roll.it</title>
+
+
+<link rel="stylesheet" href="https://www.example.com/css/style.css"/><link rel='stylesheet' href='/css/custom.css'></head>
+<body>
+
+<section class="section">
+  <div class="container">
+    <nav class="nav">
+      <div class="nav-left">
+        <a class="nav-item" href="https://www.example.com"><h1 class="title is-4">code&#39;n&#39;roll.it</h1></a>
+      </div>
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile"><a class="level-item" href='mailto:ploskonkajakub@gmail.com' target='_blank' rel='noopener'>
+            <span class="icon">
+            </span>
+          </a><a class="level-item" href='https://github.com/jploskonka' target='_blank' rel='noopener'>
+            <span class="icon">
+            </span>
+          </a><a class="level-item" href='https://twitter.com/codenrollit' target='_blank' rel='noopener'>
+            <span class="icon">
+            </span>
+          </a></nav>
+      </div>
+    </nav>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="subtitle is-6 is-pulled-right">
+      
+    </div>
+    <h2 class="subtitle is-6">January 13, 2016</h2>
+    <h1 class="title">Acceptance testing with CodeceptJS</h1>
+      
+    <div class="content">
+      
+
+<p>In this tutorial I&rsquo;m gonna look at CodeceptJS with NightmareJS backend as a tool
+for writing acceptance tests for TodoMVC application. After completing it you
+should be familiar with basic codecept concepts and be able to use it in your
+own projects.</p>
+
+<p>I&rsquo;m using vanillaJS version of TodoMVC available
+<a href="http://todomvc.com/examples/vanillajs/" target="_blank">here</a> but probably you can use whatever
+version you want to—features are supposed to be the same, the only difference
+may be in HTML selectors of elements user would interact with (although I
+haven&rsquo;t tested it so can&rsquo;t be sure).</p>
+
+<h2 id="tl-dr">tl;dr</h2>
+
+<p>Just check out the code
+<a href="https://github.com/jploskonka/testing-with-codeceptjs/tree/v2.1.1" target="_blank">here</a>.</p>
+
+<h2 id="what-is-todomvc">What is TodoMVC?</h2>
+
+<p><a href="http://todomvc.com/" target="_blank">TodoMVC</a> is a project created to help developers decide
+which JavaScript framework would they want to use in their projects. It shows the
+same application—basic todo list—written in bunch of popular (and some not
+so popular) JS frameworks so one can compare various tools in the same use case.</p>
+
+<h2 id="what-is-codeceptjs">What is CodeceptJS?</h2>
+
+<p><a href="http://codecept.io/" target="_blank">CodeceptJS</a> is a framework for writing end-to-end tests
+for web applications. It abstracts common interaction with pages to simple
+methods and can use basically anything that implements <a href="https://www.w3.org/TR/webdriver/" target="_blank">WebDriver
+specification</a> as it&rsquo;s backend. So you&rsquo;re
+not tied to Selenium here. It&rsquo;s very well documented so make sure to check out
+its website!</p>
+
+<p>I like it especially for simple API and the fact that it&rsquo;s written in pure ES6
+supported by node <strong>without transpiler</strong>, so there&rsquo;s no need for additional
+dependency like Babel. Thank you <a href="https://github.com/DavertMik" target="_blank">Michael
+Bodnarchuk</a> for that!</p>
+
+<h2 id="what-is-nightmarejs">What is NightmareJS?</h2>
+
+<p><a href="http://www.nightmarejs.org/" target="_blank">NightmareJS</a> is a library for automating
+interactions with web pages. Under the covers it uses Electron as a web browser.
+However it&rsquo;s also much younger than good ol&rsquo; Selenium so I&rsquo;d expect to
+encounter some strange issues and edge cases here, but where would be
+fun without such problems?</p>
+
+<h2 id="what-is-electron">What is Electron?</h2>
+
+<p><a href="http://electron.atom.io/" target="_blank">Electron</a> previously known as Atom Shell was
+originally created by Github for Atom editor. Then it evolved into platform
+for building desktop applications with use of web technologies like HTML and
+JavaScript. You can think of it as minimal Chromium browser with JavaScript API
+to control it.</p>
+
+<h2 id="getting-started">Getting started</h2>
+
+<h3 id="nodejs-and-yarn-dependencies">NodeJS and YARN dependencies</h3>
+
+<p>Before starting make sure you have <a href="https://nodejs.org/en/" target="_blank">node</a> and
+<a href="https://yarnpkg.com/" target="_blank">yarn</a> packages installed and updated. I&rsquo;m using node
+<code>8.9.1</code> and yarn <code>1.3.2</code>. You can check your versions with following commands:</p>
+
+<pre><code class="language-shell">$ node -v
+$ yarn --version
+</code></pre>
+
+<h3 id="setting-up-testing-environment">Setting up testing environment</h3>
+
+<p>Let&rsquo;s start by creating new directory:</p>
+
+<pre><code class="language-shell">$ mkdir codeceptjs_testing
+</code></pre>
+
+<p>Then initialize yarn project:</p>
+
+<pre><code class="language-shell">$ yarn init
+</code></pre>
+
+<p>You&rsquo;ll get prompted to answer for few basic questions to populate <code>package.json</code>
+file.</p>
+
+<pre><code class="language-javascript">// package.json
+{
+  &quot;name&quot;: &quot;acceptance-testing-with-codeceptjs&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;description&quot;: &quot;Sample testing suite created with http://codenroll.it/acceptance-testing-with-codecept-js/ tutorial&quot;,
+  &quot;repository&quot;: &quot;https://github.com/jploskonka/testing-with-codeceptjs&quot;,
+  &quot;author&quot;: &quot;Jakub Ploskonka&quot;,
+  &quot;license&quot;: &quot;MIT&quot;
+}
+</code></pre>
+
+<p>You can remove <code>main</code> entry from your <code>package.json</code>, it&rsquo;s used by npm/yarn to
+decide which file should be invoked when the module is required. In this case it
+doesn&rsquo;t matter, because I&rsquo;m not expecting testing suite to be required anywhere.</p>
+
+<p>Now it&rsquo;s time to add CodeceptJS and Nightmare dependencies:</p>
+
+<pre><code class="language-shell">$ yarn add --dev codeceptjs nightmare nightmare-upload
+# I'm using following versions:
+# codeceptjs: 1.0.3
+# nightmare: 2.10.0
+# nightmare-upload: 0.1.1
+</code></pre>
+
+<p>Finally initialize Codecept environment:</p>
+
+<pre><code class="language-shell">$ yarn run codeceptjs init
+</code></pre>
+
+<p>Make sure to select <code>Nightmare</code> with your spacebar when asked for which helpers
+you wanna use. I&rsquo;m also using <code>tests/**/*_test.js</code> as tests path instead of
+default one. You should get output like this:</p>
+
+<p><img src="/images/2016-01-13/codeceptjs_init.jpg" alt="codeceptjs_init.jpg" /></p>
+
+<p><a href="http://codecept.io/configuration/" target="_blank">Codecept&rsquo;s configuration</a> is stored in
+<code>codecept.json</code> file in project root directory.</p>
+
+<pre><code class="language-javascript">// codecept.json
+{
+  &quot;tests&quot;: &quot;tests/**/*_test.js&quot;,
+  &quot;timeout&quot;: 10000,
+  &quot;output&quot;: &quot;./output&quot;,
+  &quot;helpers&quot;: {
+    &quot;Nightmare&quot;: {
+      &quot;url&quot;: &quot;http://todomvc.com/examples/vanillajs&quot;
+    }
+  },
+  &quot;include&quot;: {},
+  &quot;bootstrap&quot;: false,
+  &quot;mocha&quot;: {},
+  &quot;name&quot;: &quot;my-amazing-testing-suite&quot;
+}
+</code></pre>
+
+<h2 id="writing-first-test">Writing first test</h2>
+
+<p>Let&rsquo;s start by creating first scenario that would check if adding a new todo works
+correctly.</p>
+
+<p>Codecept comes with bunch of handy generators to automate common development
+tasks. All files I&rsquo;m creating in the course of this tutorial are added with
+generators, unless stated otherwise. You can create your first test by running:</p>
+
+<pre><code class="language-shell">$ yarn run codeceptjs gt
+# gt—short for Generate Test
+</code></pre>
+
+<p>Provide name for your test and open newly created file in your favourite JS
+editor. I&rsquo;m using <code>add_todo_test.js</code> as filename of test and <code>Add todo</code> as
+feature I&rsquo;m testing. Generated file should like this:</p>
+
+<pre><code class="language-javascript">// tests/add_todo_test.js
+Feature('Add todo');
+
+// Note: I updated parameter here
+Scenario('User adds a new todo', (I) =&gt; {
+
+});
+</code></pre>
+
+<h2 id="good-to-know">Good to know</h2>
+
+<p>Before we jump into writing code it&rsquo;s a good idea to introduce two small
+improvements into our workflow:</p>
+
+<h3 id="convenient-command-to-run-tests">Convenient command to run tests</h3>
+
+<p>To run our tests you can use following command:</p>
+
+<pre><code class="language-shell">$ yarn run codeceptjs run --steps
+</code></pre>
+
+<p>That&rsquo;s a lot of characters to type in. Instead of that let&rsquo;s add <code>test</code> command
+to <code>package.json</code> file:</p>
+
+<pre><code class="language-javascript">// package.json
+// ...
+&quot;license&quot;: &quot;MIT&quot;,
+&quot;scripts&quot;: {
+  &quot;test&quot;: &quot;codeceptjs run --steps&quot;
+},
+&quot;devDependencies&quot;: {
+// ...
+</code></pre>
+
+<p>Now tests can be run by using:</p>
+
+<pre><code class="language-shell">$ yarn test
+</code></pre>
+
+<h3 id="running-only-some-of-tests">Running only some of tests</h3>
+
+<p>When your test suite is getting bigger it&rsquo;s useful to be able to run only few
+scenarios. To do that you can use you can use <code>--grep</code> option with <code>codeceptjs
+run</code> command. This&rsquo;ll look for matches in parameters of <code>Feature</code> and <code>Scenario</code>
+methods (<strong>it&rsquo;s case sensitive!</strong>), for example:</p>
+
+<pre><code class="language-shell">$ yarn test -- --grep Add
+# Note usage of double dashes here to pass flag to codeceptjs binary instead of
+yarn
+</code></pre>
+
+<h3 id="display-browser-window-for-easier-debugging">Display browser window for easier debugging</h3>
+
+<p>Just add <code>show: true</code> option to nightmare config:</p>
+
+<pre><code class="language-javascript">// codecept.json
+// ...
+&quot;Nightmare&quot;: {
+  &quot;url&quot;: &quot;http://todomvc.com/examples/vanillajs&quot;,
+  &quot;show&quot;: true
+}
+// ...
+</code></pre>
+
+<h2 id="back-to-code-adding-a-todo">Back to code—adding a todo</h2>
+
+<p>Now that we know how to run our tests and we can easily see what&rsquo;s going on in
+browser let&rsquo;s add first scenario! :-)</p>
+
+<p>To create a new todo, user would visit the page, insert content of todo into
+<code>.new-todo</code> input and press <code>Enter</code> key. I&rsquo;d say todo is created successfully
+when its content is visible inside <code>.todo-list</code> element. Scoping our
+expectations is important here because in case user would forget to save the
+task its content would still be visible inside input field and the test would
+pass.</p>
+
+<pre><code class="language-javascript">// tests/add_todo_test.js
+Feature('Add todo');
+
+Scenario('User adds a new todo', (I) =&gt; {
+  const todoContent = 'Learn testing with CodeceptJS';
+
+  I.amOnPage('/');
+  I.fillField('.new-todo', todoContent);
+  I.pressKey('Enter');
+  I.see(todoContent, '.todo-list');
+});
+</code></pre>
+
+<p>Now run tests with:</p>
+
+<pre><code class="language-shell">$ yarn test
+</code></pre>
+
+<p>The path passed as argument to <code>I.amOnPage</code> method will be merged with url
+set in Nightmare configuration in <code>codecept.json</code> file.</p>
+
+<h2 id="removing-a-todo">Removing a todo</h2>
+
+<p>To delete a todo it&rsquo;d be good to create one first. Then user would click on the
+<code>.destroy</code> element next to the task and there would be no todo with provided
+content inside <code>.todo-list</code> if everything works as expected. I&rsquo;m gonna use CSS
+<code>:nth-child</code> pseudo selector to find todo at correct position and delete it. For
+now I&rsquo;m testing with only one task on list so it doesn&rsquo;t make big difference
+because Codecept would click on first matching element anyway, but will be
+necessary soon.</p>
+
+<pre><code class="language-javascript">// tests/remove_todo_test.js
+Feature('Remove todo');
+
+Scenario('User removes todo', (I) =&gt; {
+  const todoContent = 'Learn testing with CodeceptJS';
+
+  I.amOnPage('/');
+  I.fillField('.new-todo', todoContent);
+  I.pressKey('Enter');
+  I.click('.todo-list &gt; li:nth-child(1) .destroy');
+  I.dontSee(todoContent, '.todo-list');
+});
+</code></pre>
+
+<p><code>I.click</code> method accepts context to narrow search of elements as second
+argument, however either I can&rsquo;t use it correctly or it&rsquo;s ignored currently.
+Anyway I couldn&rsquo;t force it to work that&rsquo;s why I&rsquo;m not using it :-(</p>
+
+<h2 id="refactoring-with-page-objects-http-codecept-io-pageobjects">Refactoring with <a href="http://codecept.io/pageobjects/" target="_blank">page objects</a></h2>
+
+<p>OK, so tests works as expected but they&rsquo;re starting to look ugly as hell.
+There&rsquo;s a lot of HTML selectors scattered here and there and too much of
+implementation details are exposed in scenarios code. What if I change form to
+create a new task so instead of pressing <code>Enter</code> user needs to click on a button
+to add a todo? Or for some unknown reason I decide that <code>.todo-list</code> is bad name
+and I want to name it <code>.task-list</code>? I&rsquo;d have to look through my entire code and
+update all those little places. Sounds like huge pain in the ass :-(</p>
+
+<p>Luckily there&rsquo;s a pattern called <a href="https://martinfowler.com/bliki/PageObject.html" target="_blank">Page
+Object</a> which exist to solve
+exactly this kind of problems. And what&rsquo;s even more awesome Codecept provides
+great support for it!</p>
+
+<p>Start with a <code>page object</code> generator:</p>
+
+<pre><code class="language-shell">$ yarn run codeceptjs gpo
+</code></pre>
+
+<p>Let&rsquo;s name it <code>TodoList</code> and place it at <code>pages/TodoList.js</code> (as generator would
+suggest). As last step I&rsquo;m gonna change naming of this object in <code>codecept.json</code>
+file from this:</p>
+
+<pre><code class="language-javascript">&quot;include&quot;: {
+  &quot;todoListPage&quot;: &quot;./pages/TodoList.js&quot;
+},
+</code></pre>
+
+<p>into this:</p>
+
+<pre><code class="language-javascript">&quot;include&quot;: {
+  &quot;TodoList&quot;: &quot;./pages/TodoList.js&quot;
+},
+</code></pre>
+
+<p>I like page object names to start with capital letter and I think the <code>Page</code>
+suffix doesn&rsquo;t help in any way so there&rsquo;s no need for additional 4 keystrokes.</p>
+
+<p>Now it&rsquo;s time to extract methods for adding and removing tasks:</p>
+
+<pre><code class="language-javascript">// pages/TodoList.js
+'use strict';
+
+let I;
+
+module.exports = {
+
+  _init() {
+    I = actor();
+  },
+
+  // Element getters
+  newFormEl: () =&gt; '.new-todo',
+  listEl: () =&gt; '.todo-list',
+
+  todoEl(position) {
+    return `.todo-list &gt; li:nth-child(${position})`;
+  },
+
+  todoDestroyEl(position) {
+    return `${this.todoEl(position)} .destroy`;
+  },
+
+  // Interactions
+  add(content) {
+    I.fillField(this.newFormEl(), content);
+    I.pressKey('Enter');
+  },
+
+  remove(position) {
+   I.click(this.todoDestroyEl(position));
+  }
+}
+</code></pre>
+
+<p>Inside page objects it&rsquo;s good to follow some kind of a convention to keep them
+similar, in this case I&rsquo;m putting methods to get HTML selectors first,
+suffixing them with <code>El</code>. Then I have methods responsible for actual
+interactions with page.</p>
+
+<p>Last thing to take care of in order to use page objects inside scenarios is to
+add it&rsquo;s name (same as defined in <code>codecept.json</code> file) to list of arguments
+passed to test like this:</p>
+
+<pre><code class="language-javascript">Scenario('message', (I, TodoList) =&gt; {...})
+</code></pre>
+
+<p>Finally here&rsquo;re test files using <code>TodoList</code> object:</p>
+
+<pre><code class="language-javascript">// tests/add_todo_test.js
+Scenario('User adds a new todo', (I, TodoList) =&gt; {
+  const todoContent = 'Learn testing with CodeceptJS';
+
+  I.amOnPage('/');
+  TodoList.add(todoContent);
+  I.see(todoContent, TodoList.listEl());
+});
+</code></pre>
+
+<pre><code class="language-javascript">// tests/remove_todo_test.js
+Scenario('User removes todo', (I, TodoList) =&gt; {
+  const todoContent = 'Learn testing with CodeceptJS';
+
+  I.amOnPage('/');
+  TodoList.add(todoContent);
+  TodoList.remove(1);
+  I.dontSee(todoContent, TodoList.listEl());
+});
+</code></pre>
+
+<h2 id="riddle-time">Riddle time</h2>
+
+<p>There&rsquo;s one issue with those 2 scenarios: first of them can pass even if adding
+task is broken and second can fail when removing feature works correctly.
+What&rsquo;s the issue?</p>
+
+<h2 id="editing-a-todo">Editing a todo</h2>
+
+<p>Same as with removing todo it&rsquo;d be good idea to create todo before editing it.
+Then user would double click on existing todo leading to show him or her input
+to enter new content. Now it&rsquo;s only a matter of pressing Enter key and checking
+if task at specified position has updated content.</p>
+
+<p>Let&rsquo;s start with <code>edit</code> method for <code>TodoList</code> page:</p>
+
+<pre><code class="language-javascript">// pages/TodoList.js
+// ...
+
+todoContentEl(position) {
+  return `${this.todoEl(position)} label`;
+},
+
+todoEditEl(position) {
+  // There's no need to scope to todo position here because
+  // it's possible to have only one todo in editing state
+  return `${this.listEl()} .edit`
+},
+
+// ...
+
+edit(position, newContent) {
+  I.doubleClick(this.todoContentEl(position));
+
+  I.fillField(this.todoEditEl(position), newContent);
+  I.pressKey('Enter');
+}
+</code></pre>
+
+<p>And test itself:</p>
+
+<pre><code class="language-javascript">// tests/edit_todo_test.js
+Feature('Edit todo');
+
+Scenario('User edits todo', (I, TodoList) =&gt; {
+  const oldContent = 'Learn testing with CodeceptJS';
+  const newContent = 'Listen to the music'
+  const context    = TodoList.todoEl(1);
+
+  I.amOnPage('/');
+  TodoList.add(oldContent);
+  TodoList.edit(1, newContent);
+
+  I.dontSee(oldContent, context);
+  I.see(newContent, context);
+});
+</code></pre>
+
+<h2 id="is-it-done">Is it done?</h2>
+
+<p>Quite important feature for every todo list application is ability to check
+what&rsquo;s already done and what is still to do. To expect checkbox to be in checked
+state (so when the todo is completed) Codecept provides <code>seeCheckboxIsChecked</code>
+method. With this knowledge there should be no problem at all to test if this
+feature works as expected.</p>
+
+<p>Let&rsquo;s start by adding <code>toggle</code> method to <code>TodoList</code>:</p>
+
+<pre><code class="language-javascript">// pages/TodoList.js
+// ...
+todoToggleEl(position) {
+  return `${this.todoEl(position)} .toggle`;
+},
+
+// ...
+
+toggle(position) {
+  I.click(this.todoToggleEl(position));
+}
+</code></pre>
+
+<p>And test file itself:</p>
+
+<pre><code class="language-javascript">// tests/state_togglers_test.js
+Feature('State togglers')
+
+const todoContent = 'Learn testing with CodeceptJS';
+
+Before((I, TodoList) =&gt; {
+  I.amOnPage('/');
+  TodoList.add(todoContent);
+});
+
+Scenario('User marks todo as done', (I, TodoList) =&gt; {
+  TodoList.toggle(1);
+  I.seeCheckboxIsChecked(TodoList.todoToggleEl(1));
+});
+
+Scenario('User marks todo as undone', (I, TodoList) =&gt; {
+  // This .toggle call is part of scenario setup,
+  // because added todo is incompleted by default
+  TodoList.toggle(1);
+
+  // And now the actual interaction which we want to test
+  TodoList.toggle(1);
+  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(1));
+});
+</code></pre>
+
+<p>The second scenario is not perfect because if the <code>.toggle</code> method doesn&rsquo;t work
+(it may be broken feature, it may be broken method itself) it&rsquo;s still gonna
+pass, but in that case the first scenario would fail.</p>
+
+<h2 id="before-after-hooks">Before/After hooks</h2>
+
+<p>To help with repeating tasks like preparing application before scenarios
+Codecept uses <code>Before</code> and <code>After</code> <a href="http://codecept.io/basics/#before" target="_blank">hooks</a>
+where you can place code needed to be executed before or after every scenario
+(like creating todo in this case).</p>
+
+<p>It may be tempting to move first <code>toggle</code> call also to <code>Before</code> hook, but
+personally I don&rsquo;t like this idea because in case of first Scenario it&rsquo;s not
+part of preparation to test but actual interaction user would do. You may do as
+you prefer, however tests should be easy to understand and read even if it
+forces some code duplication. In this case test file is so small that it
+probably won&rsquo;t make much difference.</p>
+
+<h2 id="would-you-remember-me">Would you remember me?</h2>
+
+<p>So now it&rsquo;s finally time to have some fun and test if our todos are actually
+stored in browser&rsquo;s local storage (<a href="https://www.smashingmagazine.com/2010/10/local-storage-and-how-to-use-it/" target="_blank">check out great article about
+it</a>).
+The simplest way to achieve is to refresh the page after interacting
+with it and check if changes are still visible.</p>
+
+<p>It&rsquo;s important to note here that todos are loaded AFTER page loads, so it&rsquo;s not
+enough to just refresh page and duplicate our expectations (like <code>I.see(...)</code>).
+This way specs would fail because tasks still won&rsquo;t be loaded when expectations
+are called. Instead we have to use <code>I.waitForText</code> and <code>I.waitForElement</code>
+methods to wait until tasks are fetched. By default Codecept will wait for 1
+second and if there&rsquo;s no matching text or element test will fail. You can
+override it by passing second argument to <code>I.waitForXXX</code> methods.</p>
+
+<p>The third argument is element in which expected text or element should be. In
+case of using it it&rsquo;s necessary to also pass timeout as second one.</p>
+
+<p>Let&rsquo;s start by updating our current scenarios:</p>
+
+<pre><code class="language-javascript">// tests/add_todo_test.js
+// ...
+I.see(todoContent, TodoList.listEl());
+
+I.refresh();
+I.waitForText(todoContent, 1, TodoList.listEl());
+</code></pre>
+
+<pre><code class="language-javascript">// tests/edit_todo_test.js
+// ...
+I.see(newContent, context);
+
+I.refresh();
+I.waitForText(newContent, 1, context);
+</code></pre>
+
+<pre><code class="language-javascript">// tests/remove_todo_test.js
+// ...
+I.dontSee(todoContent, TodoList.listEl());
+
+I.refresh();
+I.dontSee(todoContent, TodoList.listEl());
+</code></pre>
+
+<pre><code class="language-javascript">// tests/state_togglers_test.js
+Scenario('User marks todo as done', (I, TodoList) =&gt; {
+  // ...
+  I.seeCheckboxIsChecked(TodoList.todoToggleEl(1));
+
+  I.refresh();
+  // Wait for todo to be loaded
+  I.waitForElement(TodoList.todoEl(1));
+  // Check toggler
+  I.seeCheckboxIsChecked(TodoList.todoToggleEl(1));
+});
+
+Scenario('User marks todo as undone', (I, TodoList) =&gt; {
+  // ...
+  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(1));
+
+  I.refresh();
+  // Wait for todo to be loaded
+  I.waitForElement(TodoList.todoEl(1));
+  // Check toggler
+  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(1));
+});
+</code></pre>
+
+<h2 id="preparing-todos-before-testing">Preparing todos before testing</h2>
+
+<p>It doesn&rsquo;t feel good to manually create task before testing actions like edit
+or remove. Wouldn&rsquo;t it be nice if application started with bunch of todos
+already created, waiting there for tester to just play with them? Yeah, it
+would. Luckily it&rsquo;s quite easy to achieve.</p>
+
+<p>TodoMVC uses local storage to save data and loads them on next user visits from
+same browser. We can use this fact in our favor and fill it with some tasks
+before running scenario. Let&rsquo;s start by checking out what is the format of data
+by using Chrome Developer Tools.</p>
+
+<p>If you&rsquo;re not familiar with local storage please see
+<a href="https://www.smashingmagazine.com/2010/10/local-storage-and-how-to-use-it/" target="_blank">this</a>
+or <a href="https://developer.mozilla.org/en/docs/Web/API/Window/localStorage" target="_blank">that</a> or
+maybe even <a href="https://www.w3.org/TR/webstorage/" target="_blank">W3C spec</a>. Yes, you should
+definitely check out specs—it&rsquo;s an awesome reading!</p>
+
+<p>Open
+<a href="http://todomvc.com/examples/vanillajs/" target="_blank">http://todomvc.com/examples/vanillajs/</a>
+with Chrome Browser, add some todos to it then open Developer Tools with <code>Ctrl +
+Shift + I</code> (or <code>CMD + Opt + I</code> if you&rsquo;re using Mac OS) and select <code>Application</code>
+tab. In left column select <code>Local Storage</code> and <code>http://todomvc.com</code> domain.</p>
+
+<p><img src="/images/2016-01-13/dev_tools.jpg" alt="dev_tools" /></p>
+
+<p>You can see there&rsquo;s entry with key <code>todos-vanillajs</code> and value like this (I&rsquo;m
+using <a href="http://jsonviewer.stack.hu/" target="_blank">http://jsonviewer.stack.hu/</a> to see JSON in
+nice format):</p>
+
+<pre><code class="language-javascript">{
+  &quot;todos&quot;: [
+    {
+      &quot;title&quot;: &quot;Learn codeceptJS&quot;,
+      &quot;completed&quot;: false,
+      &quot;id&quot;: 1483639709956
+    },
+    {
+      &quot;title&quot;: &quot;Listen to the music&quot;,
+      &quot;completed&quot;: true,
+      &quot;id&quot;: 1483639712979
+    },
+    {
+      &quot;title&quot;: &quot;Party party party!&quot;,
+      &quot;completed&quot;: false,
+      &quot;id&quot;: 1483639723603
+    }
+  ]
+}
+</code></pre>
+
+<p>It turns out to be pretty simple JSON, that&rsquo;s awesome!
+Now I&rsquo;m gonna use Codecept&rsquo;s <code>executeScript</code> method and <code>Before</code> hook to
+populate local storage with tasks json. If everything goes well I shall have
+some tasks to play with in scenarios. To keep things nice and clean I&rsquo;ll create
+<code>EnvironmentManager</code> helper and keep code related to it there.</p>
+
+<p><a href="http://codecept.io/helpers/" target="_blank">Helpers</a> are ES6 classes inherited from <code>Helper</code>
+abstract class. All methods defined in helper class will be available on <code>I</code>
+object inside scenarios.  Helpers can also define hooks like <code>_before</code> or
+<code>_after</code> (note little bit different syntax then hooks in scenarios). Full list
+is available <a href="http://codecept.io/helpers/#hooks" target="_blank">here</a>.</p>
+
+<p>I&rsquo;ll also move <code>I.amOnPage('/')</code> line from all test files to this helper making
+it one and only class responsible for preparation of environment before scenarios.</p>
+
+<p>Last but not least I&rsquo;m gonna create <code>fixtures</code> directory to avoid unnecessary
+clutter in helper code and store tasks JSON there.</p>
+
+<p>Let&rsquo;s start with helper generator:</p>
+
+<pre><code class="language-shell">$ yarn run codeceptjs gh
+# gh—short for Generate Helper
+</code></pre>
+
+<p>I&rsquo;m gonna name it <code>EnvironmentManager</code> and use place it at
+<code>helpers/environment_manager_helper.js</code></p>
+
+<pre><code class="language-javascript">'use strict';
+
+// Local storage can handle only strings as keys or values
+// thus usage of JSON.stringify on required fixture.
+const TODOS = JSON.stringify(require('../fixtures/todos.json'));
+
+// Don't use magic strings like `todos-vanillajs` across code,
+// instead store it in constant with self-explaining name.
+const STORAGE_KEY = 'todos-vanillajs';
+
+// Note this function is not part of helper.
+// It shouldn't be available for outside world so keep it outside
+// of exported class.
+function setTodos(todos, storageKey) {
+  // Clear local storage before saving to it
+  localStorage.clear();
+
+  // Save todos in local storage
+  localStorage.setItem(storageKey, todos);
+}
+
+class EnvironmentManager extends Helper {
+  _before() {
+    this.helpers['Nightmare'].amOnPage('/');
+    // console.log('before')
+    // Access Nightmare helper
+    // There's no semicolon at the end of this line!
+    this.helpers['Nightmare']
+
+      // execute `setTodos` function in browser and pass
+      // TODOS and STORAGE_KEY parameters to it
+      .executeScript(setTodos, TODOS, STORAGE_KEY);
+
+    // This one is important!
+    // `executeScript` runs in browser context. To be able to do
+    // that there needs to be page opened.
+    // Because of it we can't populate local storage before opening
+    // page but TodoMVC loads content on page load. So I have to refresh
+    // my page after filling up local storage.
+    return this.helpers['Nightmare'].refresh();
+  }
+}
+
+module.exports = EnvironmentManager;
+</code></pre>
+
+<p>And the fixture is just a plain JSON file:</p>
+
+<pre><code class="language-javascript">// fixtures/todos.json
+{
+  &quot;todos&quot;: [
+    {
+      &quot;title&quot;: &quot;Learn codeceptJS&quot;,
+      &quot;completed&quot;: false,
+      &quot;id&quot;: 1483639709956
+    },
+    {
+      &quot;title&quot;: &quot;Listen to the music&quot;,
+      &quot;completed&quot;: true,
+      &quot;id&quot;: 1483639712979
+    },
+    {
+      &quot;title&quot;: &quot;Party party party!&quot;,
+      &quot;completed&quot;: false,
+      &quot;id&quot;: 1483639723603
+    }
+  ]
+}
+</code></pre>
+
+<p><code>Fixtures</code> concept is not part of Codecept&rsquo;s features so this file is created
+manually without use of generator.</p>
+
+<p>Uff, that was fun! Of course if you run tests right now (yup, you <strong>should</strong> try it)
+everything will blow up straight in your face. It means our code actually is
+executed and does <em>something</em>! :D</p>
+
+<p>Let&rsquo;s finally make those tests green by removing redundant <code>I.amOnPage('/')</code>
+calls and using existing tasks for edit, remove and state togglers tests instead
+of creating new ones.</p>
+
+<pre><code class="language-javascript">// tests/add_todo_test.js
+Scenario('User adds a new todo', (I, TodoList) =&gt; {
+  const todoContent = 'Learn testing with CodeceptJS';
+
+  TodoList.add(todoContent);
+  I.see(todoContent, TodoList.listEl());
+  // ...
+</code></pre>
+
+<pre><code class="language-javascript">// tests/edit_todo_test.js
+Feature('Edit todo');
+
+const TODOS = require('../fixtures/todos.js');
+
+Scenario('User edits todo', (I, TodoList) =&gt; {
+  const oldContent = TODOS[0].title;
+  const newContent = 'Todo content after edit';
+  const context    = TodoList.todoEl(1);
+
+  TodoList.edit(1, newContent);
+  // ...
+</code></pre>
+
+<pre><code class="language-javascript">// tests/remove_todo_test.js
+Feature('Remove todo');
+
+const TODOS = require('../fixture/todos.js');
+
+Scenario('User removes todo', (I, TodoList) =&gt; {
+  const todoContent = TODOS[0].title;
+
+  TodoList.remove(1);
+  // ...
+</code></pre>
+
+<pre><code class="language-javascript">// tests/state_togglers_test.js
+Feature('State togglers')
+
+const TODOS = require('../fixtures/todos.js').todos;
+
+// Yay, no need for Before hook here,
+
+// first scenario doesn't require any changes.
+
+Scenario('User marks todo as undone', (I, TodoList) =&gt; {
+  const todoPosition = 2;
+
+  TodoList.toggle(todoPosition);
+  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(todoPosition));
+
+  I.refresh();
+  // Wait for todo to be loaded
+  I.waitForElement(TodoList.todoEl(todoPosition));
+  // Check toggler
+  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(todoPosition));
+});
+</code></pre>
+
+<h2 id="solve-the-riddle">Solve the riddle!</h2>
+
+<p>When I was testing adding and removing tasks I was basing on list with only one
+of them. Because of that I let myself to ignore two cases:
+- Adding todo scenario would of course pass if there&rsquo;s already a task with the
+  same content as one added by user.
+- Removing todo scenario would fail if there&rsquo;s more than one task with the same
+  content as one removed by user.</p>
+
+<p>To fix those issues I&rsquo;m gonna check the number of tasks present on list before
+creating or removing one, assign it to some variable and then compare it with
+new count of tasks expecting it to increase or decrease properly. In case of
+creating a new item I&rsquo;m also gonna verify the content of <strong>last</strong> task.</p>
+
+<pre><code class="language-javascript">// pages/TodoList.js
+
+// Element getters
+//...
+
+// Update this to handle both universal selector for todo
+// and one at specified position
+todoEl(position) {
+  let el = '.todo-list &gt; li';
+
+  if(position)
+    el = [el, `:nth-child(${position})`].join('');
+
+  return el;
+},
+// ...
+
+// Content getters
+// I'm using yield to pass result from script executed in browser
+// into scenario. It can be used only inside generator.
+getTodoCount: function* () {
+  return yield I.executeScript(el =&gt; {
+    // Find all todos and get length of resulting array
+    return document.querySelectorAll(el).length;
+  }, this.todoEl());
+},
+
+// Interactions
+// ...
+</code></pre>
+
+<pre><code class="language-javascript">// tests/add_todo_test.js
+const assert = require('assert');
+
+Feature('Add todo');
+
+// Note usage of generator instead of arrow function
+Scenario('User adds a new todo', function* (I, TodoList) {
+  const todoContent = 'Learn testing with CodeceptJS';
+  const todoCount = yield* TodoList.getTodoCount();
+
+  TodoList.add(todoContent);
+
+  const newTodoCount = yield* TodoList.getTodoCount();
+  const lastTodo = TodoList.todoEl(newTodoCount);
+
+  // Check if there's one more task on list
+  assert.equal(newTodoCount, todoCount + 1);
+
+  I.see(todoContent, lastTodo);
+
+  I.refresh();
+  I.waitForText(todoContent, 1, lastTodo);
+});
+</code></pre>
+
+<pre><code class="language-javascript">// tests/remove_todo_test.js
+const assert = require('assert');
+
+Feature('Remove todo');
+
+const TODOS = require('../fixtures/todos.json').todos;
+
+// Note usage of generator instead of arrow function
+Scenario('User removes todo', function* (I, TodoList) {
+  const todoContent = TODOS[0].title;
+  const todoCount = yield* TodoList.getTodoCount();
+
+  TodoList.remove(1);
+
+  const newTodoCount = yield* TodoList.getTodoCount();
+  assert.equal(newTodoCount, todoCount - 1);
+
+  I.dontSee(todoContent, TodoList.listEl());
+
+  I.refresh();
+  I.dontSee(todoContent, TodoList.listEl());
+});
+</code></pre>
+
+<p>In order to get result of script executed in browser context into scenario
+context I use ES6 generator functions. If you&rsquo;re not familiar with them
+<a href="https://medium.com/@dtothefp/why-can-t-anyone-write-a-simple-es6-generators-tutorial-ec2bbdf6ff45#.h918s0un9" target="_blank">here&rsquo;s</a>
+great tutorial about it. I also use <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/yield*" target="_blank"><code>yield*</code>
+expression</a>
+to delegate execution from one generator (scenario) to another
+(<code>TodoList.getTodoCount</code> method).</p>
+
+<h2 id="filtering-tasks">Filtering tasks</h2>
+
+<p>Last thing left to test is ability to select only completed or uncompleted
+tasks. This should be pretty straightforward with what you already know. To test
+those I&rsquo;m gonna just click on filter and then compare existing tasks with those
+from fixture expecting only correct ones to be present on list.</p>
+
+<p>To avoid duplicating code responsible for checking if todos are visible on list
+I start with adding <code>hasTodos</code> and <code>hasNoTodos</code> methods to <code>TodoList</code> object:</p>
+
+<pre><code class="language-javascript">// pages/TodoList.js
+
+// ...
+
+// Expectations
+hasTodos(todos) {
+  todos.forEach(t =&gt; I.see(t.title, this.listEl()));
+},
+
+hasNoTodos(todos) {
+  todos.forEach(t =&gt; I.dontSee(t.title, this.listEl()));
+}
+</code></pre>
+
+<p>Nothing fancy here, just iterate over array of todos and check if user see or
+doesn&rsquo;t see them on list.</p>
+
+<p>Now methods to interact with filters:</p>
+
+<pre><code class="language-javascript">// pages/TodoList.js
+  // ...
+
+  // Element getters
+  activeFilterEl: () =&gt; '.filters li:nth-child(2) a',
+  completedFilterEl: () =&gt; '.filters li:nth-child(3) a',
+
+  // ...
+
+  // Interactions
+  selectCompleted() {
+    I.click(this.completedFilterEl());
+  },
+
+  selectActive() {
+    I.click(this.activeFilterEl());
+  },
+
+  // ...
+</code></pre>
+
+<p>Finally I&rsquo;m creating new file for filters tests (still remember about test
+generator?):</p>
+
+<pre><code class="language-javascript">// tests/filters_test.js
+
+Feature('Filters');
+
+const TODOS           = require('../fixtures/todos.js').todos;
+const TODOS_ACTIVE    = TODOS.filter(t =&gt; !t.completed);
+const TODOS_COMPLETED = TODOS.filter(t =&gt; t.completed);
+
+Scenario('User does not apply any filter', (I, TodoList) =&gt; {
+  TodoList.hasTodos(TODOS);
+});
+
+Scenario('User selects only active tasks', (I, TodoList) =&gt; {
+  TodoList.selectActive();
+
+  TodoList.hasTodos(TODOS_ACTIVE);
+  TodoList.doesntHaveTodos(TODOS_COMPLETED);
+});
+
+Scenario('User selects only completed tasks', (I, TodoList) =&gt; {
+  TodoList.selectCompleted();
+
+  TodoList.hasTodos(TODOS_COMPLETED);
+  TodoList.doesntHaveTodos(TODOS_ACTIVE);
+});
+</code></pre>
+
+<p>Simple!</p>
+
+<h2 id="and-that-s-it">And&hellip; That&rsquo;s it!</h2>
+
+<p>That was fun! Most of functionalities are covered and code looks pretty good.
+I&rsquo;m not huge fan of how page objects are implemented though—I like the idea of
+starting interactions with page with <code>I</code> object, because it&rsquo;s just good to read,
+but page objects somehow breaks this nice flow for me. <code>I</code> am adding todos to
+page, <code>I</code> am editing those. On the other hand keeping all methods on <code>I</code> object
+would be perfect example of using <a href="https://en.wikipedia.org/wiki/God_object" target="_blank">God
+Object</a> so I&rsquo;m not totally sure what&rsquo;s
+the best direction here.</p>
+
+<p>There&rsquo;re still some features of Codecept that I didn&rsquo;t covered like <a href="http://codecept.io/pageobjects/#page-fragments" target="_blank">Page
+Fragments</a>, <a href="http://codecept.io/pageobjects/#stepobjects" target="_blank">Step
+Objects</a> or custom steps, but I
+believe current codebase is good enough so there&rsquo;s no point in further
+refactoring of it. Once again—make sure to check out <a href="http://codecept.io/" target="_blank">codecept
+docs</a>!</p>
+
+<p>With all those issues in mind I still think that Codecept is one of the best and
+definitely one of most (if not the most) pleasant JS testing tool available
+right now. Big thanks to <a href="https://github.com/DavertMik" target="_blank">Michael</a> for maintaining
+it and to you for going through this tutorial!</p>
+
+<p>You can grab code from
+<a href="https://github.com/jploskonka/testing-with-codeceptjs/tree/v2.1.1" target="_blank">here</a>.</p>
+
+<h2 id="what-s-next">What&rsquo;s next?</h2>
+
+<p>If you want to play little bit more with this I&rsquo;d start with rethinking
+<code>TodoList</code> page object—few more methods and it&rsquo;ll be too big in my opinion.
+Maybe extract single todo interactions to some Page Fragment? I&rsquo;d also love to
+see some experiments with moving from Nightmare to Selenium—how much work is
+actually necessary to swap drivers, how much faster is Nightmare etc. I&rsquo;d also
+think about cleaning up add/remove todo tests somehow, because it feels there&rsquo;s
+a bit too much code there.</p>
+
+<p>Thank you for reading and be sure to leave me some feedback in comments.</p>
+
+<h2 id="changelog">Changelog</h2>
+
+<ul>
+<li>2017-11-07: Updated content to match codeceptJS version 1.0.3 (was 0.4.13)</li>
+</ul>
+
+    </div>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <aside><div id="disqus_thread"></div></aside>
+    <script type="text/javascript">
+      var disqus_shortname = 'shortname';
+      (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://github.com/jploskonka">jploskonka</a> 2017</p>
+    
+      <p>Powered by <a href="https://gohugo.io/">Hugo</a> &amp; <a href="https://github.com/ribice/kiss">Kiss</a>.</p>
+    
+  </div>
+</section>
+
+</body>
+</html>
