@@ -1,5 +1,6 @@
 ---
 title: Acceptance testing with CodeceptJS
+aliases: ['/acceptance-testing-with-codecept-js']
 date: 2016-01-13
 ---
 
