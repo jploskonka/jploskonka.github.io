@@ -1,6 +1,6 @@
 ---
 title: Acceptance testing with CodeceptJS
-date: 2017-07-12T17:12:33.962Z
+date: 2016-01-13
 ---
 
 In this tutorial I'm gonna look at CodeceptJS with NightmareJS backend as a tool
@@ -16,12 +16,12 @@ haven't tested it so can't be sure).
 
 ## tl;dr
 Just check out the code
-[here](https://github.com/jploskonka/testing-with-codeceptjs/tree/v1.0.0).
+[here](https://github.com/jploskonka/testing-with-codeceptjs/tree/v2.1.1).
 
 ## What is TodoMVC?
 [TodoMVC](http://todomvc.com/) is a project created to help developers decide
 which JavaScript framework would they want to use in their projects. It shows the
-same application (basic todo list) written in bunch of popular (and some not
+same application—basic todo list—written in bunch of popular (and some not
 so popular) JS frameworks so one can compare various tools in the same use case.
 
 ## What is CodeceptJS?
@@ -32,23 +32,22 @@ specification](https://www.w3.org/TR/webdriver/) as it's backend. So you're
 not tied to Selenium here. It's very well documented so make sure to check out
 its website!
 
-I like it especially for its simple API and the fact that it's written in pure
-ES6 supported by node **without transpiler**, so there's no need for additional
-dependency in form of Babel or whatever equivalent. Thank you [Michael
+I like it especially for simple API and the fact that it's written in pure ES6
+supported by node **without transpiler**, so there's no need for additional
+dependency like Babel. Thank you [Michael
 Bodnarchuk](https://github.com/DavertMik) for that!
 
 ## What is NightmareJS?
 [NightmareJS](http://www.nightmarejs.org/) is a library for automating
-interactions with web pages. Under the covers it uses Electron as a web browser
-so it's probably the fastest tool in the world of headless browsers (right now).
+interactions with web pages. Under the covers it uses Electron as a web browser.
 However it's also much younger than good ol' Selenium so I'd expect to
 encounter some strange issues and edge cases here, but where would be
 fun without such problems?
 
 ## What is Electron?
 [Electron](http://electron.atom.io/) previously known as Atom Shell was
-originally created by Github for the Atom editor. Then it evolved into platform
-to build desktop applications with use of web technologies like HTML and
+originally created by Github for Atom editor. Then it evolved into platform
+for building desktop applications with use of web technologies like HTML and
 JavaScript. You can think of it as minimal Chromium browser with JavaScript API
 to control it.
 
@@ -56,7 +55,7 @@ to control it.
 ### NodeJS and YARN dependencies
 Before starting make sure you have [node](https://nodejs.org/en/) and
 [yarn](https://yarnpkg.com/) packages installed and updated. I'm using node
-`7.2.0` and yarn `0.18.0`. You can check your versions with following commands:
+`8.9.1` and yarn `1.3.2`. You can check your versions with following commands:
 
 ``` shell
 $ node -v
@@ -99,21 +98,22 @@ Now it's time to add CodeceptJS and Nightmare dependencies:
 ``` shell
 $ yarn add --dev codeceptjs nightmare nightmare-upload
 # I'm using following versions:
-# codeceptjs: 0.4.13
-# nightmare: 2.9.1
+# codeceptjs: 1.0.3
+# nightmare: 2.10.0
 # nightmare-upload: 0.1.1
 ```
 
 Finally initialize Codecept environment:
 
 ``` shell
-$ node_modules/.bin/codeceptjs init
+$ yarn run codeceptjs init
 ```
 
-Make sure to select `Nightmare` when asked for which helpers you wanna use. You
-should get output like this:
+Make sure to select `Nightmare` with your spacebar when asked for which helpers
+you wanna use. I'm also using `tests/**/*_test.js` as tests path instead of
+default one. You should get output like this:
 
-![codeceptjs_init.jpg](./images/codeceptjs_init.jpg)
+![codeceptjs_init.jpg](/images/2016-01-13/codeceptjs_init.jpg)
 
 [Codecept's configuration](http://codecept.io/configuration/) is stored in
 `codecept.json` file in project root directory.
@@ -132,7 +132,7 @@ should get output like this:
   "include": {},
   "bootstrap": false,
   "mocha": {},
-  "name": "acceptance-testing-with-codecept-js"
+  "name": "my-amazing-testing-suite"
 }
 ```
 
@@ -145,18 +145,19 @@ tasks. All files I'm creating in the course of this tutorial are added with
 generators, unless stated otherwise. You can create your first test by running:
 
 ``` shell
-$ node_modules/.bin/codeceptjs gt
-# or generate test instead of gt
+$ yarn run codeceptjs gt
+# gt—short for Generate Test
 ```
 
 Provide name for your test and open newly created file in your favourite JS
-editor. It should look like this:
+editor. I'm using `add_todo_test.js` as filename of test and `Add todo` as
+feature I'm testing. Generated file should like this:
 
 ``` javascript
 // tests/add_todo_test.js
 Feature('Add todo');
 
-// Note: I've updated parameter here
+// Note: I updated parameter here
 Scenario('User adds a new todo', (I) => {
 
 });
@@ -166,15 +167,22 @@ Scenario('User adds a new todo', (I) => {
 Before we jump into writing code it's a good idea to introduce two small
 improvements into our workflow:
 
-- ### Convenient command to run tests
+### Convenient command to run tests
+To run our tests you can use following command:
 
-To do that open the `package.json` file and add `test` script:
+``` shell
+$ yarn run codeceptjs run --steps
+```
+
+That's a lot of characters to type in. Instead of that let's add `test` command
+to `package.json` file:
+
 ``` javascript
 // package.json
 // ...
 "license": "MIT",
 "scripts": {
-  "test": "codeceptjs run . --steps"
+  "test": "codeceptjs run --steps"
 },
 "devDependencies": {
 // ...
@@ -183,22 +191,24 @@ To do that open the `package.json` file and add `test` script:
 Now tests can be run by using:
 
 ``` shell
-$ yarn run test
+$ yarn test
 ```
 
-BTW if you want to run only some of the tests you can use `--grep` option of
-`codeceptjs run` command. This'll look for matches in parameters of `Feature` and
-`Scenario` methods (**it's case sensitive!**), for example:
+### Running only some of tests
+When your test suite is getting bigger it's useful to be able to run only few
+scenarios. To do that you can use you can use `--grep` option with `codeceptjs
+run` command. This'll look for matches in parameters of `Feature` and `Scenario`
+methods (**it's case sensitive!**), for example:
 
 ``` shell
-$ ./node_modules/.bin/codeceptjs run --grep Add
-# Or with yarn task (note usage of dashes here):
-$ yarn run test -- --grep Add
+$ yarn test -- --grep Add
+# Note usage of double dashes here to pass flag to codeceptjs binary instead of
+yarn
 ```
 
-- ### Display browser window for easier debugging
+### Display browser window for easier debugging
 
-Just pass `show: true` option to nightmare config
+Just add `show: true` option to nightmare config:
 ``` javascript
 // codecept.json
 // ...
@@ -210,11 +220,11 @@ Just pass `show: true` option to nightmare config
 ```
 
 ## Back to code—adding a todo
-Now when it's possible to easily run tests and see what's going on during them
-let's write first scenario!
+Now that we know how to run our tests and we can easily see what's going on in
+browser let's add first scenario! :-)
 
-To create a new todo, user would visit the page, insert the content of todo into
-`.new-todo` input and press Enter key. I assume the todo is created successfully
+To create a new todo, user would visit the page, insert content of todo into
+`.new-todo` input and press `Enter` key. I'd say todo is created successfully
 when its content is visible inside `.todo-list` element. Scoping our
 expectations is important here because in case user would forget to save the
 task its content would still be visible inside input field and the test would
@@ -237,14 +247,14 @@ Scenario('User adds a new todo', (I) => {
 Now run tests with:
 
 ``` shell
-$ yarn run test
+$ yarn test
 ```
 
 The path passed as argument to `I.amOnPage` method will be merged with url
-passed to Nightmare configuration in `codecept.json` file.
+set in Nightmare configuration in `codecept.json` file.
 
 ## Removing a todo
-To delete a todo it'd be good to create one first, then user would click on the
+To delete a todo it'd be good to create one first. Then user would click on the
 `.destroy` element next to the task and there would be no todo with provided
 content inside `.todo-list` if everything works as expected. I'm gonna use CSS
 `:nth-child` pseudo selector to find todo at correct position and delete it. For
@@ -269,26 +279,26 @@ Scenario('User removes todo', (I) => {
 
 `I.click` method accepts context to narrow search of elements as second
 argument, however either I can't use it correctly or it's ignored currently.
-Anyway I couldn't force it to work that's why I'm not using it :(
+Anyway I couldn't force it to work that's why I'm not using it :-(
 
 ## Refactoring with [page objects](http://codecept.io/pageobjects/)
 OK, so tests works as expected but they're starting to look ugly as hell.
 There's a lot of HTML selectors scattered here and there and too much of
-implementation details are exposed there. What if I change form to create a new
-task so instead of pressing `Enter` user needs to click on a button to add a
-todo? Or for some unknown reason I decide that `.todo-list` is bad name and I
-want to name it `.task-list`? I'd have to look through my entire code and update
-all those little places. Sounds like huge pain in the ass :(
+implementation details are exposed in scenarios code. What if I change form to
+create a new task so instead of pressing `Enter` user needs to click on a button
+to add a todo? Or for some unknown reason I decide that `.todo-list` is bad name
+and I want to name it `.task-list`? I'd have to look through my entire code and
+update all those little places. Sounds like huge pain in the ass :-(
 
 Luckily there's a pattern called [Page
-Object](https://martinfowler.com/bliki/PageObject.html) which exists to solve
+Object](https://martinfowler.com/bliki/PageObject.html) which exist to solve
 exactly this kind of problems. And what's even more awesome Codecept provides
 great support for it!
 
 Start with a `page object` generator:
 
 ``` shell
-$ ./node_modules/.bin/codeceptjs gpo
+$ yarn run codeceptjs gpo
 ```
 
 Let's name it `TodoList` and place it at `pages/TodoList.js` (as generator would
@@ -363,15 +373,15 @@ passed to test like this:
 Scenario('message', (I, TodoList) => {...})
 ```
 
-Finally here're test files using the `TodoList` object:
+Finally here're test files using `TodoList` object:
 
 ``` javascript
 // tests/add_todo_test.js
-Scenario('User adds a new todo', (I, todoList) => {
+Scenario('User adds a new todo', (I, TodoList) => {
   const todoContent = 'Learn testing with CodeceptJS';
 
   I.amOnPage('/');
-  todoList.add(todoContent);
+  TodoList.add(todoContent);
   I.see(todoContent, TodoList.listEl());
 });
 ```
@@ -395,11 +405,11 @@ What's the issue?
 
 ## Editing a todo
 Same as with removing todo it'd be good idea to create todo before editing it.
-Then user would double click on existing todo leading to show him or her
-input to enter new content. Then it's only a matter of pressing Enter key and
-checking if task at specified position has updated content.
+Then user would double click on existing todo leading to show him or her input
+to enter new content. Now it's only a matter of pressing Enter key and checking
+if task at specified position has updated content.
 
-Let's start with `edit` method for `TodoList`:
+Let's start with `edit` method for `TodoList` page:
 
 ``` javascript
 // pages/TodoList.js
@@ -468,8 +478,7 @@ toggle(position) {
 }
 ```
 
-Then as usually get a little help from `test` generator and create new file at
-`tests/state_togglers_test.js`:
+And test file itself:
 
 ``` javascript
 // tests/state_togglers_test.js
@@ -498,7 +507,7 @@ Scenario('User marks todo as undone', (I, TodoList) => {
 });
 ```
 
-The second scenario is not perfect because if the `.toggle` method does not work
+The second scenario is not perfect because if the `.toggle` method doesn't work
 (it may be broken feature, it may be broken method itself) it's still gonna
 pass, but in that case the first scenario would fail.
 
@@ -519,71 +528,28 @@ probably won't make much difference.
 So now it's finally time to have some fun and test if our todos are actually
 stored in browser's local storage ([check out great article about
 it](https://www.smashingmagazine.com/2010/10/local-storage-and-how-to-use-it/)).
-The simplest way to achieve that would be to refresh the page after interacting
-with it and check if changes are still visible. Unfortunately there's no
-off-the-shelf method to refresh the page so let's use another Codecept feature
-called [helpers](http://codecept.io/helpers/)
-to implement such one.
-
-Helpers are ES6 classes inherited from `Helper` abstract class. All methods
-defined in helper class will be available on `I` object inside scenarios.
-Helpers can also define hooks like `_before` or `_after` (note little different
-syntax). Full list is available [here](http://codecept.io/helpers/#hooks).
-
-As usually let's start with generator:
-
-``` shell
-$ node_modules/.bin/codeceptjs gh
-```
-
-You'll get prompted for helper name and location. I'm gonna name it `PageHelper`
-and store it at `helpers/page_helper.js`. Besides creating new file each helper
-has to be added to `codecept.json` what is handled by generator.
-
-Inside `Helper` class we've got access to other helpers via `this.helpers` array.
-We're gonna use it to call `refresh` method on `Nightmare` helper.
-
-``` javascript
-// helpers/page_helper.js
-'use strict';
-
-class PageHelper extends Helper {
-  // When naming helper methods keep in mind
-  // it will be used on I object in scenarios,
-  // not on helper class.
-  //
-  // I.refresh() wouldn't be a good method call because
-  // it doesn't tell what are you actually refreshing
-  // thus I'm going with I.refreshPage()
-  refreshPage() {
-    const browser = this.helpers['Nightmare'].browser
-
-    return browser.refresh()
-  }
-}
-
-module.exports = PageHelper;
-```
+The simplest way to achieve is to refresh the page after interacting
+with it and check if changes are still visible.
 
 It's important to note here that todos are loaded AFTER page loads, so it's not
 enough to just refresh page and duplicate our expectations (like `I.see(...)`).
-This way specs would fail because tasks still won't be loaded  when expectations
+This way specs would fail because tasks still won't be loaded when expectations
 are called. Instead we have to use `I.waitForText` and `I.waitForElement`
 methods to wait until tasks are fetched. By default Codecept will wait for 1
-second and if there's no matching text or element test will fail. This timeout
-can be changed with `waitForTimeout` config option in Nightmare helper
-configuration globally or you can pass number of seconds as second argument to
-`waitFor...` method to change it only for specific cases.
+second and if there's no matching text or element test will fail. You can
+override it by passing second argument to `I.waitForXXX` methods.
 
 The third argument is element in which expected text or element should be. In
 case of using it it's necessary to also pass timeout as second one.
+
+Let's start by updating our current scenarios:
 
 ``` javascript
 // tests/add_todo_test.js
 // ...
 I.see(todoContent, TodoList.listEl());
 
-I.refreshPage();
+I.refresh();
 I.waitForText(todoContent, 1, TodoList.listEl());
 ```
 
@@ -592,7 +558,7 @@ I.waitForText(todoContent, 1, TodoList.listEl());
 // ...
 I.see(newContent, context);
 
-I.refreshPage();
+I.refresh();
 I.waitForText(newContent, 1, context);
 ```
 
@@ -601,7 +567,7 @@ I.waitForText(newContent, 1, context);
 // ...
 I.dontSee(todoContent, TodoList.listEl());
 
-I.refreshPage();
+I.refresh();
 I.dontSee(todoContent, TodoList.listEl());
 ```
 
@@ -611,7 +577,7 @@ Scenario('User marks todo as done', (I, TodoList) => {
   // ...
   I.seeCheckboxIsChecked(TodoList.todoToggleEl(1));
 
-  I.refreshPage();
+  I.refresh();
   // Wait for todo to be loaded
   I.waitForElement(TodoList.todoEl(1));
   // Check toggler
@@ -620,13 +586,13 @@ Scenario('User marks todo as done', (I, TodoList) => {
 
 Scenario('User marks todo as undone', (I, TodoList) => {
   // ...
-  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(2));
+  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(1));
 
-  I.refreshPage();
+  I.refresh();
   // Wait for todo to be loaded
-  I.waitForElement(TodoList.todoEl(2));
+  I.waitForElement(TodoList.todoEl(1));
   // Check toggler
-  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(2));
+  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(1));
 });
 ```
 
@@ -644,7 +610,8 @@ by using Chrome Developer Tools.
 If you're not familiar with local storage please see
 [this](https://www.smashingmagazine.com/2010/10/local-storage-and-how-to-use-it/)
 or [that](https://developer.mozilla.org/en/docs/Web/API/Window/localStorage) or
-maybe even [W3C spec](https://www.w3.org/TR/webstorage/).
+maybe even [W3C spec](https://www.w3.org/TR/webstorage/). Yes, you should
+definitely check out specs—it's an awesome reading!
 
 Open
 [http://todomvc.com/examples/vanillajs/](http://todomvc.com/examples/vanillajs/)
@@ -652,7 +619,7 @@ with Chrome Browser, add some todos to it then open Developer Tools with `Ctrl +
 Shift + I` (or `CMD + Opt + I` if you're using Mac OS) and select `Application`
 tab. In left column select `Local Storage` and `http://todomvc.com` domain.
 
-![dev_tools](./images/dev_tools.jpg)
+![dev_tools](/images/2016-01-13/dev_tools.jpg)
 
 You can see there's entry with key `todos-vanillajs` and value like this (I'm
 using [http://jsonviewer.stack.hu/](http://jsonviewer.stack.hu/) to see JSON in
@@ -680,34 +647,40 @@ nice format):
 }
 ```
 
-It turns out to be pretty simple JSON, that's awesome! Now I'm gonna use
-Codecept's `executeAsyncScript`\* method and `Before` hook to save this JSON
-in local storage. If everything goes well I shall have some tasks to play
-with in scenarios. To keep things nice and clean I'll create
+It turns out to be pretty simple JSON, that's awesome!
+Now I'm gonna use Codecept's `executeScript` method and `Before` hook to
+populate local storage with tasks json. If everything goes well I shall have
+some tasks to play with in scenarios. To keep things nice and clean I'll create
 `EnvironmentManager` helper and keep code related to it there.
+
+[Helpers](http://codecept.io/helpers/) are ES6 classes inherited from `Helper`
+abstract class. All methods defined in helper class will be available on `I`
+object inside scenarios.  Helpers can also define hooks like `_before` or
+`_after` (note little bit different syntax then hooks in scenarios). Full list
+is available [here](http://codecept.io/helpers/#hooks).
 
 I'll also move `I.amOnPage('/')` line from all test files to this helper making
 it one and only class responsible for preparation of environment before scenarios.
 
-Remember to use `codeceptjs gh` generator to don't worry about updating
-`codecept.json` file.
-
 Last but not least I'm gonna create `fixtures` directory to avoid unnecessary
 clutter in helper code and store tasks JSON there.
 
-\* At the time of writing this tutorial there's an issue with `executeScript`
-method causing Electron to freeze when used in `Before` hook. See Github issue
-[here](https://github.com/Codeception/CodeceptJS/issues/302). Because of that
-I'm using async version of it and calling `done()` immediately after setting up
-storage :D
+Let's start with helper generator:
+
+``` shell
+$ yarn run codeceptjs gh
+# gh—short for Generate Helper
+```
+
+I'm gonna name it `EnvironmentManager` and use place it at
+`helpers/environment_manager_helper.js`
 
 ``` javascript
-// helpers/environment_manager_helper.js
 'use strict';
 
 // Local storage can handle only strings as keys or values
 // thus usage of JSON.stringify on required fixture.
-const TODOS = JSON.stringify(require('../fixtures/todos.js'));
+const TODOS = JSON.stringify(require('../fixtures/todos.json'));
 
 // Don't use magic strings like `todos-vanillajs` across code,
 // instead store it in constant with self-explaining name.
@@ -716,58 +689,44 @@ const STORAGE_KEY = 'todos-vanillajs';
 // Note this function is not part of helper.
 // It shouldn't be available for outside world so keep it outside
 // of exported class.
-function setTodos(todos, storageKey, done) {
+function setTodos(todos, storageKey) {
   // Clear local storage before saving to it
   localStorage.clear();
 
   // Save todos in local storage
   localStorage.setItem(storageKey, todos);
-
-  // Because of using async version of executeScript
-  // I have to tell codecept when it's really done. Otherwise
-  // tests would just hang on this and never proceed further.
-  done();
 }
 
 class EnvironmentManager extends Helper {
   _before() {
+    this.helpers['Nightmare'].amOnPage('/');
+    // console.log('before')
     // Access Nightmare helper
     // There's no semicolon at the end of this line!
     this.helpers['Nightmare']
 
       // execute `setTodos` function in browser and pass
       // TODOS and STORAGE_KEY parameters to it
-      .executeAsyncScript(setTodos, TODOS, STORAGE_KEY);
-
-    // Open page
-    return this.openAndRefresh();
-  }
-
-  openAndRefresh() {
-    // Visit '/' page
-    this.helpers['Nightmare'].amOnPage('/');
+      .executeScript(setTodos, TODOS, STORAGE_KEY);
 
     // This one is important!
     // `executeScript` runs in browser context. To be able to do
-    // that there needs to be page opened. So even if
-    // _before hook is executed BEFORE visiting page, the script is
-    // actually run AFTER the page is loaded. This means that storage
-    // is populated AFTER I see the page and that's why I'm
-    // refreshing it here.
-    //
-    // I don't like this solution but can't figure out anything better :(
-    return this.helpers['PageHelper'].refreshPage();
+    // that there needs to be page opened.
+    // Because of it we can't populate local storage before opening
+    // page but TodoMVC loads content on page load. So I have to refresh
+    // my page after filling up local storage.
+    return this.helpers['Nightmare'].refresh();
   }
 }
 
 module.exports = EnvironmentManager;
 ```
 
-And the fixture is just a module exporting plain JS object:
+And the fixture is just a plain JSON file:
 
 ``` javascript
-// fixtures/todos.js
-module.exports = {
+// fixtures/todos.json
+{
   "todos": [
     {
       "title": "Learn codeceptJS",
@@ -785,7 +744,7 @@ module.exports = {
       "id": 1483639723603
     }
   ]
-};
+}
 ```
 
 `Fixtures` concept is not part of Codecept's features so this file is created
@@ -848,12 +807,16 @@ const TODOS = require('../fixtures/todos.js').todos;
 // first scenario doesn't require any changes.
 
 Scenario('User marks todo as undone', (I, TodoList) => {
-  // Second todo in fixture is already completed
-  // so there's no need to checking one as such before
-  // interacting with it
-  TodoList.toggle(2);
-  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(2));
-  // ...
+  const todoPosition = 2;
+
+  TodoList.toggle(todoPosition);
+  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(todoPosition));
+
+  I.refresh();
+  // Wait for todo to be loaded
+  I.waitForElement(TodoList.todoEl(todoPosition));
+  // Check toggler
+  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(todoPosition));
 });
 ```
 
@@ -923,7 +886,7 @@ Scenario('User adds a new todo', function* (I, TodoList) {
 
   I.see(todoContent, lastTodo);
 
-  I.refreshPage();
+  I.refresh();
   I.waitForText(todoContent, 1, lastTodo);
 });
 ```
@@ -934,7 +897,7 @@ const assert = require('assert');
 
 Feature('Remove todo');
 
-const TODOS = require('../fixtures/todos.js').todos;
+const TODOS = require('../fixtures/todos.json').todos;
 
 // Note usage of generator instead of arrow function
 Scenario('User removes todo', function* (I, TodoList) {
@@ -948,7 +911,7 @@ Scenario('User removes todo', function* (I, TodoList) {
 
   I.dontSee(todoContent, TodoList.listEl());
 
-  I.refreshPage();
+  I.refresh();
   I.dontSee(todoContent, TodoList.listEl());
 });
 ```
@@ -968,7 +931,7 @@ those I'm gonna just click on filter and then compare existing tasks with those
 from fixture expecting only correct ones to be present on list.
 
 To avoid duplicating code responsible for checking if todos are visible on list
-I start with adding `hasTodo` and `doesntHaveTodo` methods to `TodoList` object:
+I start with adding `hasTodos` and `hasNoTodos` methods to `TodoList` object:
 
 ``` javascript
 // pages/TodoList.js
@@ -980,15 +943,38 @@ hasTodos(todos) {
   todos.forEach(t => I.see(t.title, this.listEl()));
 },
 
-doesntHaveTodos(todos) {
+hasNoTodos(todos) {
   todos.forEach(t => I.dontSee(t.title, this.listEl()));
 }
 ```
 
 Nothing fancy here, just iterate over array of todos and check if user see or
-don't see them on list.
+doesn't see them on list.
 
-Finally I'm creating new file for filters tests (still remember test
+Now methods to interact with filters:
+``` javascript
+// pages/TodoList.js
+  // ...
+
+  // Element getters
+  activeFilterEl: () => '.filters li:nth-child(2) a',
+  completedFilterEl: () => '.filters li:nth-child(3) a',
+
+  // ...
+
+  // Interactions
+  selectCompleted() {
+    I.click(this.completedFilterEl());
+  },
+
+  selectActive() {
+    I.click(this.activeFilterEl());
+  },
+
+  // ...
+```
+
+Finally I'm creating new file for filters tests (still remember about test
 generator?):
 
 ``` javascript
@@ -1023,13 +1009,13 @@ Simple!
 
 ## And... That's it!
 That was fun! Most of functionalities are covered and code looks pretty good.
-I've encountered some issues (like freezing `executeScript` method) and I'm not
-huge fan of how page objects are implemented—I like the idea of starting
-interactions with page with `I` object, because it's just good to read, but page
-objects somehow breaks this nice flow for me. `I` am adding todos to page, `I`
-am editing those. On the other hand keeping all methods on `I` object would be
-perfect example of using [God Object](https://en.wikipedia.org/wiki/God_object)
-so I'm not totally sure what's the best direction here.
+I'm not huge fan of how page objects are implemented though—I like the idea of
+starting interactions with page with `I` object, because it's just good to read,
+but page objects somehow breaks this nice flow for me. `I` am adding todos to
+page, `I` am editing those. On the other hand keeping all methods on `I` object
+would be perfect example of using [God
+Object](https://en.wikipedia.org/wiki/God_object) so I'm not totally sure what's
+the best direction here.
 
 There're still some features of Codecept that I didn't covered like [Page
 Fragments](http://codecept.io/pageobjects/#page-fragments), [Step
@@ -1044,15 +1030,19 @@ right now. Big thanks to [Michael](https://github.com/DavertMik) for maintaining
 it and to you for going through this tutorial!
 
 You can grab code from
-[here](https://github.com/jploskonka/testing-with-codeceptjs/tree/v1.0.0).
+[here](https://github.com/jploskonka/testing-with-codeceptjs/tree/v2.1.1).
 
 ## What's next?
 If you want to play little bit more with this I'd start with rethinking
 `TodoList` page object—few more methods and it'll be too big in my opinion.
-Maybe extract single tood interactions to some Page Fragment? I'd also love to
+Maybe extract single todo interactions to some Page Fragment? I'd also love to
 see some experiments with moving from Nightmare to Selenium—how much work is
 actually necessary to swap drivers, how much faster is Nightmare etc. I'd also
-think about cleaning up add/remove todo tests somehow, because there's way too
-much code there.
+think about cleaning up add/remove todo tests somehow, because it feels there's
+a bit too much code there.
 
 Thank you for reading and be sure to leave me some feedback in comments.
+
+## Changelog
+- 2017-11-07: Updated content to match codeceptJS version 1.0.3 (was 0.4.13)
+
