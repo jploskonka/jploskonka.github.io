@@ -181,7 +181,7 @@ feature I&rsquo;m testing. Generated file should like this:</p>
 });</code></pre></div>
 <h2 id="good-to-know">Good to know</h2>
 
-<p>Before we jump into writing code it&rsquo;s a good idea to introduce two small
+<p>Before we jump into writing code it&rsquo;s a good idea to introduce few small
 improvements into our workflow:</p>
 
 <h3 id="convenient-command-to-run-tests">Convenient command to run tests</h3>
@@ -197,7 +197,8 @@ to <code>package.json</code> file:</p>
   <span style="color:#ed9d13">&#34;test&#34;</span>: <span style="color:#ed9d13">&#34;codeceptjs run --steps&#34;</span>
 },
 <span style="color:#ed9d13">&#34;devDependencies&#34;</span>: {
-<span style="color:#a61717;background-color:#e3d2d2">// ...</span></code></pre></div>
+<span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>}</code></pre></div>
 <p>Now tests can be run by using:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ yarn test</code></pre></div>
 <h3 id="running-only-some-of-tests">Running only some of tests</h3>
@@ -217,8 +218,7 @@ methods (<strong>it&rsquo;s case sensitive!</strong>), for example:</p>
 </span><span style="color:#999;font-style:italic"></span><span style="color:#ed9d13">&#34;Nightmare&#34;</span>: {
   <span style="color:#ed9d13">&#34;url&#34;</span>: <span style="color:#ed9d13">&#34;http://todomvc.com/examples/vanillajs&#34;</span>,
   <span style="color:#ed9d13">&#34;show&#34;</span>: <span style="color:#6ab825;font-weight:bold">true</span>
-}
-<span style="color:#a61717;background-color:#e3d2d2">// ...</span></code></pre></div>
+}</code></pre></div>
 <h2 id="back-to-code-adding-a-todo">Back to code—adding a todo</h2>
 
 <p>Now that we know how to run our tests and we can easily see what&rsquo;s going on in
@@ -684,7 +684,8 @@ of creating new ones.</p>
 
   TodoList.add(todoContent);
   I.see(todoContent, TodoList.listEl());
-  <span style="color:#a61717;background-color:#e3d2d2">// ...</span></code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/edit_todo_test.js
+  <span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>}</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/edit_todo_test.js
 </span><span style="color:#999;font-style:italic"></span>Feature(<span style="color:#ed9d13">&#39;Edit todo&#39;</span>);
 
 <span style="color:#6ab825;font-weight:bold">const</span> TODOS = require(<span style="color:#ed9d13">&#39;../fixtures/todos.js&#39;</span>);
@@ -695,7 +696,8 @@ Scenario(<span style="color:#ed9d13">&#39;User edits todo&#39;</span>, (I, TodoL
   <span style="color:#6ab825;font-weight:bold">const</span> context    = TodoList.todoEl(<span style="color:#3677a9">1</span>);
 
   TodoList.edit(<span style="color:#3677a9">1</span>, newContent);
-  <span style="color:#a61717;background-color:#e3d2d2">// ...</span></code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/remove_todo_test.js
+  <span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>}</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/remove_todo_test.js
 </span><span style="color:#999;font-style:italic"></span>Feature(<span style="color:#ed9d13">&#39;Remove todo&#39;</span>);
 
 <span style="color:#6ab825;font-weight:bold">const</span> TODOS = require(<span style="color:#ed9d13">&#39;../fixture/todos.js&#39;</span>);
@@ -704,7 +706,8 @@ Scenario(<span style="color:#ed9d13">&#39;User removes todo&#39;</span>, (I, Tod
   <span style="color:#6ab825;font-weight:bold">const</span> todoContent = TODOS[<span style="color:#3677a9">0</span>].title;
 
   TodoList.remove(<span style="color:#3677a9">1</span>);
-  <span style="color:#a61717;background-color:#e3d2d2">// ...</span></code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/state_togglers_test.js
+  <span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>}</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/state_togglers_test.js
 </span><span style="color:#999;font-style:italic"></span>Feature(<span style="color:#ed9d13">&#39;State togglers&#39;</span>)
 
 <span style="color:#6ab825;font-weight:bold">const</span> TODOS = require(<span style="color:#ed9d13">&#39;../fixtures/todos.js&#39;</span>).todos;
@@ -763,10 +766,7 @@ creating a new item I&rsquo;m also gonna verify the content of <strong>last</str
     <span style="color:#999;font-style:italic">// Find all todos and get length of resulting array
 </span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#24909d">document</span>.querySelectorAll(el).length;
   }, <span style="color:#6ab825;font-weight:bold">this</span>.todoEl());
-},
-
-<span style="color:#999;font-style:italic">// Interactions
-</span><span style="color:#999;font-style:italic"></span><span style="color:#a61717;background-color:#e3d2d2">// ...</span></code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/add_todo_test.js
+}</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/add_todo_test.js
 </span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">const</span> assert = require(<span style="color:#ed9d13">&#39;assert&#39;</span>);
 
 Feature(<span style="color:#ed9d13">&#39;Add todo&#39;</span>);
@@ -859,9 +859,7 @@ doesn&rsquo;t see them on list.</p>
 
   selectActive() {
     I.click(<span style="color:#6ab825;font-weight:bold">this</span>.activeFilterEl());
-  },
-
-  <span style="color:#a61717;background-color:#e3d2d2">// ...</span></code></pre></div>
+  },</code></pre></div>
 <p>Finally I&rsquo;m creating new file for filters tests (still remember about test
 generator?):</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/filters_test.js
