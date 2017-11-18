@@ -3,11 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="keywords" content="***REMOVED***"/>
 
 <title>Acceptance testing with CodeceptJS | jploskonka</title>
 
-
-<link rel="stylesheet" href="https://jploskonka.github.io/css/style.css"/></head>
+<link rel="stylesheet" href="https://jploskonka.github.io/css/style.css"/>
+<link rel='stylesheet' href="https://jploskonka.github.io/css/custom.css"/>
+</head>
 <body>
 
 <section class="section">
@@ -103,55 +105,37 @@ to control it.</p>
 <p>Before starting make sure you have <a href="https://nodejs.org/en/" target="_blank">node</a> and
 <a href="https://yarnpkg.com/" target="_blank">yarn</a> packages installed and updated. I&rsquo;m using node
 <code>8.9.1</code> and yarn <code>1.3.2</code>. You can check your versions with following commands:</p>
-
-<pre><code class="language-shell">$ node -v
-$ yarn --version
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ node -v
+$ yarn --version</code></pre></div>
 <h3 id="setting-up-testing-environment">Setting up testing environment</h3>
 
 <p>Let&rsquo;s start by creating new directory:</p>
-
-<pre><code class="language-shell">$ mkdir codeceptjs_testing
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir codeceptjs_testing</code></pre></div>
 <p>Then initialize yarn project:</p>
-
-<pre><code class="language-shell">$ yarn init
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ yarn init</code></pre></div>
 <p>You&rsquo;ll get prompted to answer for few basic questions to populate <code>package.json</code>
 file.</p>
-
-<pre><code class="language-javascript">// package.json
-{
-  &quot;name&quot;: &quot;acceptance-testing-with-codeceptjs&quot;,
-  &quot;version&quot;: &quot;1.0.0&quot;,
-  &quot;description&quot;: &quot;Sample testing suite created with http://codenroll.it/acceptance-testing-with-codecept-js/ tutorial&quot;,
-  &quot;repository&quot;: &quot;https://github.com/jploskonka/testing-with-codeceptjs&quot;,
-  &quot;author&quot;: &quot;Jakub Ploskonka&quot;,
-  &quot;license&quot;: &quot;MIT&quot;
-}
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// package.json
+</span><span style="color:#999;font-style:italic"></span>{
+  <span style="color:#ed9d13">&#34;name&#34;</span>: <span style="color:#ed9d13">&#34;acceptance-testing-with-codeceptjs&#34;</span>,
+  <span style="color:#ed9d13">&#34;version&#34;</span>: <span style="color:#ed9d13">&#34;1.0.0&#34;</span>,
+  <span style="color:#ed9d13">&#34;description&#34;</span>: <span style="color:#ed9d13">&#34;Sample testing suite created with http://codenroll.it/acceptance-testing-with-codecept-js/ tutorial&#34;</span>,
+  <span style="color:#ed9d13">&#34;repository&#34;</span>: <span style="color:#ed9d13">&#34;https://github.com/jploskonka/testing-with-codeceptjs&#34;</span>,
+  <span style="color:#ed9d13">&#34;author&#34;</span>: <span style="color:#ed9d13">&#34;Jakub Ploskonka&#34;</span>,
+  <span style="color:#ed9d13">&#34;license&#34;</span>: <span style="color:#ed9d13">&#34;MIT&#34;</span>
+}</code></pre></div>
 <p>You can remove <code>main</code> entry from your <code>package.json</code>, it&rsquo;s used by npm/yarn to
 decide which file should be invoked when the module is required. In this case it
 doesn&rsquo;t matter, because I&rsquo;m not expecting testing suite to be required anywhere.</p>
 
 <p>Now it&rsquo;s time to add CodeceptJS and Nightmare dependencies:</p>
-
-<pre><code class="language-shell">$ yarn add --dev codeceptjs nightmare nightmare-upload
-# I'm using following versions:
-# codeceptjs: 1.0.3
-# nightmare: 2.10.0
-# nightmare-upload: 0.1.1
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ yarn add --dev codeceptjs nightmare nightmare-upload
+<span style="color:#999;font-style:italic"># I&#39;m using following versions:
+</span><span style="color:#999;font-style:italic"># codeceptjs: 1.0.3
+</span><span style="color:#999;font-style:italic"># nightmare: 2.10.0
+</span><span style="color:#999;font-style:italic"></span># nightmare-upload: <span style="color:#3677a9">0</span>.1.1</code></pre></div>
 <p>Finally initialize Codecept environment:</p>
-
-<pre><code class="language-shell">$ yarn run codeceptjs init
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ yarn run codeceptjs init</code></pre></div>
 <p>Make sure to select <code>Nightmare</code> with your spacebar when asked for which helpers
 you wanna use. I&rsquo;m also using <code>tests/**/*_test.js</code> as tests path instead of
 default one. You should get output like this:</p>
@@ -160,24 +144,21 @@ default one. You should get output like this:</p>
 
 <p><a href="http://codecept.io/configuration/" target="_blank">Codecept&rsquo;s configuration</a> is stored in
 <code>codecept.json</code> file in project root directory.</p>
-
-<pre><code class="language-javascript">// codecept.json
-{
-  &quot;tests&quot;: &quot;tests/**/*_test.js&quot;,
-  &quot;timeout&quot;: 10000,
-  &quot;output&quot;: &quot;./output&quot;,
-  &quot;helpers&quot;: {
-    &quot;Nightmare&quot;: {
-      &quot;url&quot;: &quot;http://todomvc.com/examples/vanillajs&quot;
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// codecept.json
+</span><span style="color:#999;font-style:italic"></span>{
+  <span style="color:#ed9d13">&#34;tests&#34;</span>: <span style="color:#ed9d13">&#34;tests/**/*_test.js&#34;</span>,
+  <span style="color:#ed9d13">&#34;timeout&#34;</span>: <span style="color:#3677a9">10000</span>,
+  <span style="color:#ed9d13">&#34;output&#34;</span>: <span style="color:#ed9d13">&#34;./output&#34;</span>,
+  <span style="color:#ed9d13">&#34;helpers&#34;</span>: {
+    <span style="color:#ed9d13">&#34;Nightmare&#34;</span>: {
+      <span style="color:#ed9d13">&#34;url&#34;</span>: <span style="color:#ed9d13">&#34;http://todomvc.com/examples/vanillajs&#34;</span>
     }
   },
-  &quot;include&quot;: {},
-  &quot;bootstrap&quot;: false,
-  &quot;mocha&quot;: {},
-  &quot;name&quot;: &quot;my-amazing-testing-suite&quot;
-}
-</code></pre>
-
+  <span style="color:#ed9d13">&#34;include&#34;</span>: {},
+  <span style="color:#ed9d13">&#34;bootstrap&#34;</span>: <span style="color:#6ab825;font-weight:bold">false</span>,
+  <span style="color:#ed9d13">&#34;mocha&#34;</span>: {},
+  <span style="color:#ed9d13">&#34;name&#34;</span>: <span style="color:#ed9d13">&#34;my-amazing-testing-suite&#34;</span>
+}</code></pre></div>
 <h2 id="writing-first-test">Writing first test</h2>
 
 <p>Let&rsquo;s start by creating first scenario that would check if adding a new todo works
@@ -186,24 +167,18 @@ correctly.</p>
 <p>Codecept comes with bunch of handy generators to automate common development
 tasks. All files I&rsquo;m creating in the course of this tutorial are added with
 generators, unless stated otherwise. You can create your first test by running:</p>
-
-<pre><code class="language-shell">$ yarn run codeceptjs gt
-# gt—short for Generate Test
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ yarn run codeceptjs gt
+# gt—short <span style="color:#6ab825;font-weight:bold">for</span> Generate Test</code></pre></div>
 <p>Provide name for your test and open newly created file in your favourite JS
 editor. I&rsquo;m using <code>add_todo_test.js</code> as filename of test and <code>Add todo</code> as
 feature I&rsquo;m testing. Generated file should like this:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/add_todo_test.js
+</span><span style="color:#999;font-style:italic"></span>Feature(<span style="color:#ed9d13">&#39;Add todo&#39;</span>);
 
-<pre><code class="language-javascript">// tests/add_todo_test.js
-Feature('Add todo');
+<span style="color:#999;font-style:italic">// Note: I updated parameter here
+</span><span style="color:#999;font-style:italic"></span>Scenario(<span style="color:#ed9d13">&#39;User adds a new todo&#39;</span>, (I) =&gt; {
 
-// Note: I updated parameter here
-Scenario('User adds a new todo', (I) =&gt; {
-
-});
-</code></pre>
-
+});</code></pre></div>
 <h2 id="good-to-know">Good to know</h2>
 
 <p>Before we jump into writing code it&rsquo;s a good idea to introduce two small
@@ -212,53 +187,40 @@ improvements into our workflow:</p>
 <h3 id="convenient-command-to-run-tests">Convenient command to run tests</h3>
 
 <p>To run our tests you can use following command:</p>
-
-<pre><code class="language-shell">$ yarn run codeceptjs run --steps
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ yarn run codeceptjs run --steps</code></pre></div>
 <p>That&rsquo;s a lot of characters to type in. Instead of that let&rsquo;s add <code>test</code> command
 to <code>package.json</code> file:</p>
-
-<pre><code class="language-javascript">// package.json
-// ...
-&quot;license&quot;: &quot;MIT&quot;,
-&quot;scripts&quot;: {
-  &quot;test&quot;: &quot;codeceptjs run --steps&quot;
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// package.json
+</span><span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span><span style="color:#ed9d13">&#34;license&#34;</span>: <span style="color:#ed9d13">&#34;MIT&#34;</span>,
+<span style="color:#ed9d13">&#34;scripts&#34;</span>: {
+  <span style="color:#ed9d13">&#34;test&#34;</span>: <span style="color:#ed9d13">&#34;codeceptjs run --steps&#34;</span>
 },
-&quot;devDependencies&quot;: {
-// ...
-</code></pre>
+<span style="color:#ed9d13">&#34;devDependencies&#34;</span>: {
 
+<span style="color:#999;font-style:italic">// ahs
+</span><span style="color:#999;font-style:italic"></span><span style="color:#a61717;background-color:#e3d2d2">//a</span></code></pre></div>
 <p>Now tests can be run by using:</p>
-
-<pre><code class="language-shell">$ yarn test
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ yarn test</code></pre></div>
 <h3 id="running-only-some-of-tests">Running only some of tests</h3>
 
 <p>When your test suite is getting bigger it&rsquo;s useful to be able to run only few
 scenarios. To do that you can use you can use <code>--grep</code> option with <code>codeceptjs
 run</code> command. This&rsquo;ll look for matches in parameters of <code>Feature</code> and <code>Scenario</code>
 methods (<strong>it&rsquo;s case sensitive!</strong>), for example:</p>
-
-<pre><code class="language-shell">$ yarn test -- --grep Add
-# Note usage of double dashes here to pass flag to codeceptjs binary instead of
-yarn
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ yarn <span style="color:#24909d">test</span> -- --grep Add
+<span style="color:#999;font-style:italic"># Note usage of double dashes here to pass flag to codeceptjs binary instead of
+</span><span style="color:#999;font-style:italic"></span>yarn</code></pre></div>
 <h3 id="display-browser-window-for-easier-debugging">Display browser window for easier debugging</h3>
 
 <p>Just add <code>show: true</code> option to nightmare config:</p>
-
-<pre><code class="language-javascript">// codecept.json
-// ...
-&quot;Nightmare&quot;: {
-  &quot;url&quot;: &quot;http://todomvc.com/examples/vanillajs&quot;,
-  &quot;show&quot;: true
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// codecept.json
+</span><span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span><span style="color:#ed9d13">&#34;Nightmare&#34;</span>: {
+  <span style="color:#ed9d13">&#34;url&#34;</span>: <span style="color:#ed9d13">&#34;http://todomvc.com/examples/vanillajs&#34;</span>,
+  <span style="color:#ed9d13">&#34;show&#34;</span>: <span style="color:#6ab825;font-weight:bold">true</span>
 }
-// ...
-</code></pre>
-
+<span style="color:#a61717;background-color:#e3d2d2">// ...</span></code></pre></div>
 <h2 id="back-to-code-adding-a-todo">Back to code—adding a todo</h2>
 
 <p>Now that we know how to run our tests and we can easily see what&rsquo;s going on in
@@ -270,25 +232,19 @@ when its content is visible inside <code>.todo-list</code> element. Scoping our
 expectations is important here because in case user would forget to save the
 task its content would still be visible inside input field and the test would
 pass.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/add_todo_test.js
+</span><span style="color:#999;font-style:italic"></span>Feature(<span style="color:#ed9d13">&#39;Add todo&#39;</span>);
 
-<pre><code class="language-javascript">// tests/add_todo_test.js
-Feature('Add todo');
+Scenario(<span style="color:#ed9d13">&#39;User adds a new todo&#39;</span>, (I) =&gt; {
+  <span style="color:#6ab825;font-weight:bold">const</span> todoContent = <span style="color:#ed9d13">&#39;Learn testing with CodeceptJS&#39;</span>;
 
-Scenario('User adds a new todo', (I) =&gt; {
-  const todoContent = 'Learn testing with CodeceptJS';
-
-  I.amOnPage('/');
-  I.fillField('.new-todo', todoContent);
-  I.pressKey('Enter');
-  I.see(todoContent, '.todo-list');
-});
-</code></pre>
-
+  I.amOnPage(<span style="color:#ed9d13">&#39;/&#39;</span>);
+  I.fillField(<span style="color:#ed9d13">&#39;.new-todo&#39;</span>, todoContent);
+  I.pressKey(<span style="color:#ed9d13">&#39;Enter&#39;</span>);
+  I.see(todoContent, <span style="color:#ed9d13">&#39;.todo-list&#39;</span>);
+});</code></pre></div>
 <p>Now run tests with:</p>
-
-<pre><code class="language-shell">$ yarn test
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ yarn test</code></pre></div>
 <p>The path passed as argument to <code>I.amOnPage</code> method will be merged with url
 set in Nightmare configuration in <code>codecept.json</code> file.</p>
 
@@ -301,21 +257,18 @@ content inside <code>.todo-list</code> if everything works as expected. I&rsquo;
 now I&rsquo;m testing with only one task on list so it doesn&rsquo;t make big difference
 because Codecept would click on first matching element anyway, but will be
 necessary soon.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/remove_todo_test.js
+</span><span style="color:#999;font-style:italic"></span>Feature(<span style="color:#ed9d13">&#39;Remove todo&#39;</span>);
 
-<pre><code class="language-javascript">// tests/remove_todo_test.js
-Feature('Remove todo');
+Scenario(<span style="color:#ed9d13">&#39;User removes todo&#39;</span>, (I) =&gt; {
+  <span style="color:#6ab825;font-weight:bold">const</span> todoContent = <span style="color:#ed9d13">&#39;Learn testing with CodeceptJS&#39;</span>;
 
-Scenario('User removes todo', (I) =&gt; {
-  const todoContent = 'Learn testing with CodeceptJS';
-
-  I.amOnPage('/');
-  I.fillField('.new-todo', todoContent);
-  I.pressKey('Enter');
-  I.click('.todo-list &gt; li:nth-child(1) .destroy');
-  I.dontSee(todoContent, '.todo-list');
-});
-</code></pre>
-
+  I.amOnPage(<span style="color:#ed9d13">&#39;/&#39;</span>);
+  I.fillField(<span style="color:#ed9d13">&#39;.new-todo&#39;</span>, todoContent);
+  I.pressKey(<span style="color:#ed9d13">&#39;Enter&#39;</span>);
+  I.click(<span style="color:#ed9d13">&#39;.todo-list &gt; li:nth-child(1) .destroy&#39;</span>);
+  I.dontSee(todoContent, <span style="color:#ed9d13">&#39;.todo-list&#39;</span>);
+});</code></pre></div>
 <p><code>I.click</code> method accepts context to narrow search of elements as second
 argument, however either I can&rsquo;t use it correctly or it&rsquo;s ignored currently.
 Anyway I couldn&rsquo;t force it to work that&rsquo;s why I&rsquo;m not using it :-(</p>
@@ -336,35 +289,25 @@ exactly this kind of problems. And what&rsquo;s even more awesome Codecept provi
 great support for it!</p>
 
 <p>Start with a <code>page object</code> generator:</p>
-
-<pre><code class="language-shell">$ yarn run codeceptjs gpo
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ yarn run codeceptjs gpo</code></pre></div>
 <p>Let&rsquo;s name it <code>TodoList</code> and place it at <code>pages/TodoList.js</code> (as generator would
 suggest). As last step I&rsquo;m gonna change naming of this object in <code>codecept.json</code>
 file from this:</p>
-
-<pre><code class="language-javascript">&quot;include&quot;: {
-  &quot;todoListPage&quot;: &quot;./pages/TodoList.js&quot;
-},
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#ed9d13">&#34;include&#34;</span>: {
+  <span style="color:#ed9d13">&#34;todoListPage&#34;</span>: <span style="color:#ed9d13">&#34;./pages/TodoList.js&#34;</span>
+},</code></pre></div>
 <p>into this:</p>
-
-<pre><code class="language-javascript">&quot;include&quot;: {
-  &quot;TodoList&quot;: &quot;./pages/TodoList.js&quot;
-},
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#ed9d13">&#34;include&#34;</span>: {
+  <span style="color:#ed9d13">&#34;TodoList&#34;</span>: <span style="color:#ed9d13">&#34;./pages/TodoList.js&#34;</span>
+},</code></pre></div>
 <p>I like page object names to start with capital letter and I think the <code>Page</code>
 suffix doesn&rsquo;t help in any way so there&rsquo;s no need for additional 4 keystrokes.</p>
 
 <p>Now it&rsquo;s time to extract methods for adding and removing tasks:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// pages/TodoList.js
+</span><span style="color:#999;font-style:italic"></span><span style="color:#ed9d13">&#39;use strict&#39;</span>;
 
-<pre><code class="language-javascript">// pages/TodoList.js
-'use strict';
-
-let I;
+<span style="color:#6ab825;font-weight:bold">let</span> I;
 
 module.exports = {
 
@@ -372,30 +315,28 @@ module.exports = {
     I = actor();
   },
 
-  // Element getters
-  newFormEl: () =&gt; '.new-todo',
-  listEl: () =&gt; '.todo-list',
+  <span style="color:#999;font-style:italic">// Element getters
+</span><span style="color:#999;font-style:italic"></span>  newFormEl: () =&gt; <span style="color:#ed9d13">&#39;.new-todo&#39;</span>,
+  listEl: () =&gt; <span style="color:#ed9d13">&#39;.todo-list&#39;</span>,
 
   todoEl(position) {
-    return `.todo-list &gt; li:nth-child(${position})`;
+    <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#ed9d13">`.todo-list &gt; li:nth-child(</span><span style="color:#ed9d13">${</span>position<span style="color:#ed9d13">}</span><span style="color:#ed9d13">)`</span>;
   },
 
   todoDestroyEl(position) {
-    return `${this.todoEl(position)} .destroy`;
+    <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#ed9d13">`</span><span style="color:#ed9d13">${</span><span style="color:#6ab825;font-weight:bold">this</span>.todoEl(position)<span style="color:#ed9d13">}</span><span style="color:#ed9d13"> .destroy`</span>;
   },
 
-  // Interactions
-  add(content) {
-    I.fillField(this.newFormEl(), content);
-    I.pressKey('Enter');
+  <span style="color:#999;font-style:italic">// Interactions
+</span><span style="color:#999;font-style:italic"></span>  add(content) {
+    I.fillField(<span style="color:#6ab825;font-weight:bold">this</span>.newFormEl(), content);
+    I.pressKey(<span style="color:#ed9d13">&#39;Enter&#39;</span>);
   },
 
   remove(position) {
-   I.click(this.todoDestroyEl(position));
+   I.click(<span style="color:#6ab825;font-weight:bold">this</span>.todoDestroyEl(position));
   }
-}
-</code></pre>
-
+}</code></pre></div>
 <p>Inside page objects it&rsquo;s good to follow some kind of a convention to keep them
 similar, in this case I&rsquo;m putting methods to get HTML selectors first,
 suffixing them with <code>El</code>. Then I have methods responsible for actual
@@ -404,33 +345,24 @@ interactions with page.</p>
 <p>Last thing to take care of in order to use page objects inside scenarios is to
 add it&rsquo;s name (same as defined in <code>codecept.json</code> file) to list of arguments
 passed to test like this:</p>
-
-<pre><code class="language-javascript">Scenario('message', (I, TodoList) =&gt; {...})
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">Scenario(<span style="color:#ed9d13">&#39;message&#39;</span>, (I, TodoList) =&gt; {...})</code></pre></div>
 <p>Finally here&rsquo;re test files using <code>TodoList</code> object:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/add_todo_test.js
+</span><span style="color:#999;font-style:italic"></span>Scenario(<span style="color:#ed9d13">&#39;User adds a new todo&#39;</span>, (I, TodoList) =&gt; {
+  <span style="color:#6ab825;font-weight:bold">const</span> todoContent = <span style="color:#ed9d13">&#39;Learn testing with CodeceptJS&#39;</span>;
 
-<pre><code class="language-javascript">// tests/add_todo_test.js
-Scenario('User adds a new todo', (I, TodoList) =&gt; {
-  const todoContent = 'Learn testing with CodeceptJS';
-
-  I.amOnPage('/');
+  I.amOnPage(<span style="color:#ed9d13">&#39;/&#39;</span>);
   TodoList.add(todoContent);
   I.see(todoContent, TodoList.listEl());
-});
-</code></pre>
+});</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/remove_todo_test.js
+</span><span style="color:#999;font-style:italic"></span>Scenario(<span style="color:#ed9d13">&#39;User removes todo&#39;</span>, (I, TodoList) =&gt; {
+  <span style="color:#6ab825;font-weight:bold">const</span> todoContent = <span style="color:#ed9d13">&#39;Learn testing with CodeceptJS&#39;</span>;
 
-<pre><code class="language-javascript">// tests/remove_todo_test.js
-Scenario('User removes todo', (I, TodoList) =&gt; {
-  const todoContent = 'Learn testing with CodeceptJS';
-
-  I.amOnPage('/');
+  I.amOnPage(<span style="color:#ed9d13">&#39;/&#39;</span>);
   TodoList.add(todoContent);
-  TodoList.remove(1);
+  TodoList.remove(<span style="color:#3677a9">1</span>);
   I.dontSee(todoContent, TodoList.listEl());
-});
-</code></pre>
-
+});</code></pre></div>
 <h2 id="riddle-time">Riddle time</h2>
 
 <p>There&rsquo;s one issue with those 2 scenarios: first of them can pass even if adding
@@ -445,49 +377,43 @@ to enter new content. Now it&rsquo;s only a matter of pressing Enter key and che
 if task at specified position has updated content.</p>
 
 <p>Let&rsquo;s start with <code>edit</code> method for <code>TodoList</code> page:</p>
-
-<pre><code class="language-javascript">// pages/TodoList.js
-// ...
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// pages/TodoList.js
+</span><span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>
 todoContentEl(position) {
-  return `${this.todoEl(position)} label`;
+  <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#ed9d13">`</span><span style="color:#ed9d13">${</span><span style="color:#6ab825;font-weight:bold">this</span>.todoEl(position)<span style="color:#ed9d13">}</span><span style="color:#ed9d13"> label`</span>;
 },
 
 todoEditEl(position) {
-  // There's no need to scope to todo position here because
-  // it's possible to have only one todo in editing state
-  return `${this.listEl()} .edit`
+  <span style="color:#999;font-style:italic">// There&#39;s no need to scope to todo position here because
+</span><span style="color:#999;font-style:italic"></span>  <span style="color:#999;font-style:italic">// it&#39;s possible to have only one todo in editing state
+</span><span style="color:#999;font-style:italic"></span>  <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#ed9d13">`</span><span style="color:#ed9d13">${</span><span style="color:#6ab825;font-weight:bold">this</span>.listEl()<span style="color:#ed9d13">}</span><span style="color:#ed9d13"> .edit`</span>
 },
 
-// ...
-
+<span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>
 edit(position, newContent) {
-  I.doubleClick(this.todoContentEl(position));
+  I.doubleClick(<span style="color:#6ab825;font-weight:bold">this</span>.todoContentEl(position));
 
-  I.fillField(this.todoEditEl(position), newContent);
-  I.pressKey('Enter');
-}
-</code></pre>
-
+  I.fillField(<span style="color:#6ab825;font-weight:bold">this</span>.todoEditEl(position), newContent);
+  I.pressKey(<span style="color:#ed9d13">&#39;Enter&#39;</span>);
+}</code></pre></div>
 <p>And test itself:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/edit_todo_test.js
+</span><span style="color:#999;font-style:italic"></span>Feature(<span style="color:#ed9d13">&#39;Edit todo&#39;</span>);
 
-<pre><code class="language-javascript">// tests/edit_todo_test.js
-Feature('Edit todo');
+Scenario(<span style="color:#ed9d13">&#39;User edits todo&#39;</span>, (I, TodoList) =&gt; {
+  <span style="color:#6ab825;font-weight:bold">const</span> oldContent = <span style="color:#ed9d13">&#39;Learn testing with CodeceptJS&#39;</span>;
+  <span style="color:#6ab825;font-weight:bold">const</span> newContent = <span style="color:#ed9d13">&#39;Listen to the music&#39;</span>
+  <span style="color:#6ab825;font-weight:bold">const</span> context    = TodoList.todoEl(<span style="color:#3677a9">1</span>);
 
-Scenario('User edits todo', (I, TodoList) =&gt; {
-  const oldContent = 'Learn testing with CodeceptJS';
-  const newContent = 'Listen to the music'
-  const context    = TodoList.todoEl(1);
-
-  I.amOnPage('/');
+  I.amOnPage(<span style="color:#ed9d13">&#39;/&#39;</span>);
   TodoList.add(oldContent);
-  TodoList.edit(1, newContent);
+  TodoList.edit(<span style="color:#3677a9">1</span>, newContent);
 
   I.dontSee(oldContent, context);
   I.see(newContent, context);
-});
-</code></pre>
-
+});</code></pre></div>
 <h2 id="is-it-done">Is it done?</h2>
 
 <p>Quite important feature for every todo list application is ability to check
@@ -497,48 +423,42 @@ method. With this knowledge there should be no problem at all to test if this
 feature works as expected.</p>
 
 <p>Let&rsquo;s start by adding <code>toggle</code> method to <code>TodoList</code>:</p>
-
-<pre><code class="language-javascript">// pages/TodoList.js
-// ...
-todoToggleEl(position) {
-  return `${this.todoEl(position)} .toggle`;
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// pages/TodoList.js
+</span><span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>todoToggleEl(position) {
+  <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#ed9d13">`</span><span style="color:#ed9d13">${</span><span style="color:#6ab825;font-weight:bold">this</span>.todoEl(position)<span style="color:#ed9d13">}</span><span style="color:#ed9d13"> .toggle`</span>;
 },
 
-// ...
-
+<span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>
 toggle(position) {
-  I.click(this.todoToggleEl(position));
-}
-</code></pre>
-
+  I.click(<span style="color:#6ab825;font-weight:bold">this</span>.todoToggleEl(position));
+}</code></pre></div>
 <p>And test file itself:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/state_togglers_test.js
+</span><span style="color:#999;font-style:italic"></span>Feature(<span style="color:#ed9d13">&#39;State togglers&#39;</span>)
 
-<pre><code class="language-javascript">// tests/state_togglers_test.js
-Feature('State togglers')
-
-const todoContent = 'Learn testing with CodeceptJS';
+<span style="color:#6ab825;font-weight:bold">const</span> todoContent = <span style="color:#ed9d13">&#39;Learn testing with CodeceptJS&#39;</span>;
 
 Before((I, TodoList) =&gt; {
-  I.amOnPage('/');
+  I.amOnPage(<span style="color:#ed9d13">&#39;/&#39;</span>);
   TodoList.add(todoContent);
 });
 
-Scenario('User marks todo as done', (I, TodoList) =&gt; {
-  TodoList.toggle(1);
-  I.seeCheckboxIsChecked(TodoList.todoToggleEl(1));
+Scenario(<span style="color:#ed9d13">&#39;User marks todo as done&#39;</span>, (I, TodoList) =&gt; {
+  TodoList.toggle(<span style="color:#3677a9">1</span>);
+  I.seeCheckboxIsChecked(TodoList.todoToggleEl(<span style="color:#3677a9">1</span>));
 });
 
-Scenario('User marks todo as undone', (I, TodoList) =&gt; {
-  // This .toggle call is part of scenario setup,
-  // because added todo is incompleted by default
-  TodoList.toggle(1);
+Scenario(<span style="color:#ed9d13">&#39;User marks todo as undone&#39;</span>, (I, TodoList) =&gt; {
+  <span style="color:#999;font-style:italic">// This .toggle call is part of scenario setup,
+</span><span style="color:#999;font-style:italic"></span>  <span style="color:#999;font-style:italic">// because added todo is incompleted by default
+</span><span style="color:#999;font-style:italic"></span>  TodoList.toggle(<span style="color:#3677a9">1</span>);
 
-  // And now the actual interaction which we want to test
-  TodoList.toggle(1);
-  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(1));
-});
-</code></pre>
-
+  <span style="color:#999;font-style:italic">// And now the actual interaction which we want to test
+</span><span style="color:#999;font-style:italic"></span>  TodoList.toggle(<span style="color:#3677a9">1</span>);
+  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(<span style="color:#3677a9">1</span>));
+});</code></pre></div>
 <p>The second scenario is not perfect because if the <code>.toggle</code> method doesn&rsquo;t work
 (it may be broken feature, it may be broken method itself) it&rsquo;s still gonna
 pass, but in that case the first scenario would fail.</p>
@@ -577,55 +497,43 @@ override it by passing second argument to <code>I.waitForXXX</code> methods.</p>
 case of using it it&rsquo;s necessary to also pass timeout as second one.</p>
 
 <p>Let&rsquo;s start by updating our current scenarios:</p>
-
-<pre><code class="language-javascript">// tests/add_todo_test.js
-// ...
-I.see(todoContent, TodoList.listEl());
-
-I.refresh();
-I.waitForText(todoContent, 1, TodoList.listEl());
-</code></pre>
-
-<pre><code class="language-javascript">// tests/edit_todo_test.js
-// ...
-I.see(newContent, context);
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/add_todo_test.js
+</span><span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>I.see(todoContent, TodoList.listEl());
 
 I.refresh();
-I.waitForText(newContent, 1, context);
-</code></pre>
-
-<pre><code class="language-javascript">// tests/remove_todo_test.js
-// ...
-I.dontSee(todoContent, TodoList.listEl());
+I.waitForText(todoContent, <span style="color:#3677a9">1</span>, TodoList.listEl());</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/edit_todo_test.js
+</span><span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>I.see(newContent, context);
 
 I.refresh();
-I.dontSee(todoContent, TodoList.listEl());
-</code></pre>
+I.waitForText(newContent, <span style="color:#3677a9">1</span>, context);</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/remove_todo_test.js
+</span><span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>I.dontSee(todoContent, TodoList.listEl());
 
-<pre><code class="language-javascript">// tests/state_togglers_test.js
-Scenario('User marks todo as done', (I, TodoList) =&gt; {
-  // ...
-  I.seeCheckboxIsChecked(TodoList.todoToggleEl(1));
+I.refresh();
+I.dontSee(todoContent, TodoList.listEl());</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/state_togglers_test.js
+</span><span style="color:#999;font-style:italic"></span>Scenario(<span style="color:#ed9d13">&#39;User marks todo as done&#39;</span>, (I, TodoList) =&gt; {
+  <span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>  I.seeCheckboxIsChecked(TodoList.todoToggleEl(<span style="color:#3677a9">1</span>));
 
   I.refresh();
-  // Wait for todo to be loaded
-  I.waitForElement(TodoList.todoEl(1));
-  // Check toggler
-  I.seeCheckboxIsChecked(TodoList.todoToggleEl(1));
+  <span style="color:#999;font-style:italic">// Wait for todo to be loaded
+</span><span style="color:#999;font-style:italic"></span>  I.waitForElement(TodoList.todoEl(<span style="color:#3677a9">1</span>));
+  <span style="color:#999;font-style:italic">// Check toggler
+</span><span style="color:#999;font-style:italic"></span>  I.seeCheckboxIsChecked(TodoList.todoToggleEl(<span style="color:#3677a9">1</span>));
 });
 
-Scenario('User marks todo as undone', (I, TodoList) =&gt; {
-  // ...
-  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(1));
+Scenario(<span style="color:#ed9d13">&#39;User marks todo as undone&#39;</span>, (I, TodoList) =&gt; {
+  <span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(<span style="color:#3677a9">1</span>));
 
   I.refresh();
-  // Wait for todo to be loaded
-  I.waitForElement(TodoList.todoEl(1));
-  // Check toggler
-  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(1));
-});
-</code></pre>
-
+  <span style="color:#999;font-style:italic">// Wait for todo to be loaded
+</span><span style="color:#999;font-style:italic"></span>  I.waitForElement(TodoList.todoEl(<span style="color:#3677a9">1</span>));
+  <span style="color:#999;font-style:italic">// Check toggler
+</span><span style="color:#999;font-style:italic"></span>  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(<span style="color:#3677a9">1</span>));
+});</code></pre></div>
 <h2 id="preparing-todos-before-testing">Preparing todos before testing</h2>
 
 <p>It doesn&rsquo;t feel good to manually create task before testing actions like edit
@@ -655,28 +563,25 @@ tab. In left column select <code>Local Storage</code> and <code>http://todomvc.c
 <p>You can see there&rsquo;s entry with key <code>todos-vanillajs</code> and value like this (I&rsquo;m
 using <a href="http://jsonviewer.stack.hu/" target="_blank">http://jsonviewer.stack.hu/</a> to see JSON in
 nice format):</p>
-
-<pre><code class="language-javascript">{
-  &quot;todos&quot;: [
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">{
+  <span style="color:#ed9d13">&#34;todos&#34;</span>: [
     {
-      &quot;title&quot;: &quot;Learn codeceptJS&quot;,
-      &quot;completed&quot;: false,
-      &quot;id&quot;: 1483639709956
+      <span style="color:#ed9d13">&#34;title&#34;</span>: <span style="color:#ed9d13">&#34;Learn codeceptJS&#34;</span>,
+      <span style="color:#ed9d13">&#34;completed&#34;</span>: <span style="color:#6ab825;font-weight:bold">false</span>,
+      <span style="color:#ed9d13">&#34;id&#34;</span>: <span style="color:#3677a9">1483639709956</span>
     },
     {
-      &quot;title&quot;: &quot;Listen to the music&quot;,
-      &quot;completed&quot;: true,
-      &quot;id&quot;: 1483639712979
+      <span style="color:#ed9d13">&#34;title&#34;</span>: <span style="color:#ed9d13">&#34;Listen to the music&#34;</span>,
+      <span style="color:#ed9d13">&#34;completed&#34;</span>: <span style="color:#6ab825;font-weight:bold">true</span>,
+      <span style="color:#ed9d13">&#34;id&#34;</span>: <span style="color:#3677a9">1483639712979</span>
     },
     {
-      &quot;title&quot;: &quot;Party party party!&quot;,
-      &quot;completed&quot;: false,
-      &quot;id&quot;: 1483639723603
+      <span style="color:#ed9d13">&#34;title&#34;</span>: <span style="color:#ed9d13">&#34;Party party party!&#34;</span>,
+      <span style="color:#ed9d13">&#34;completed&#34;</span>: <span style="color:#6ab825;font-weight:bold">false</span>,
+      <span style="color:#ed9d13">&#34;id&#34;</span>: <span style="color:#3677a9">1483639723603</span>
     }
   ]
-}
-</code></pre>
-
+}</code></pre></div>
 <p>It turns out to be pretty simple JSON, that&rsquo;s awesome!
 Now I&rsquo;m gonna use Codecept&rsquo;s <code>executeScript</code> method and <code>Before</code> hook to
 populate local storage with tasks json. If everything goes well I shall have
@@ -696,84 +601,75 @@ it one and only class responsible for preparation of environment before scenario
 clutter in helper code and store tasks JSON there.</p>
 
 <p>Let&rsquo;s start with helper generator:</p>
-
-<pre><code class="language-shell">$ yarn run codeceptjs gh
-# gh—short for Generate Helper
-</code></pre>
-
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ yarn run codeceptjs gh
+# gh—short <span style="color:#6ab825;font-weight:bold">for</span> Generate Helper</code></pre></div>
 <p>I&rsquo;m gonna name it <code>EnvironmentManager</code> and use place it at
 <code>helpers/environment_manager_helper.js</code></p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#ed9d13">&#39;use strict&#39;</span>;
 
-<pre><code class="language-javascript">'use strict';
+<span style="color:#999;font-style:italic">// Local storage can handle only strings as keys or values
+</span><span style="color:#999;font-style:italic">// thus usage of JSON.stringify on required fixture.
+</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">const</span> TODOS = JSON.stringify(require(<span style="color:#ed9d13">&#39;../fixtures/todos.json&#39;</span>));
 
-// Local storage can handle only strings as keys or values
-// thus usage of JSON.stringify on required fixture.
-const TODOS = JSON.stringify(require('../fixtures/todos.json'));
+<span style="color:#999;font-style:italic">// Don&#39;t use magic strings like `todos-vanillajs` across code,
+</span><span style="color:#999;font-style:italic">// instead store it in constant with self-explaining name.
+</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">const</span> STORAGE_KEY = <span style="color:#ed9d13">&#39;todos-vanillajs&#39;</span>;
 
-// Don't use magic strings like `todos-vanillajs` across code,
-// instead store it in constant with self-explaining name.
-const STORAGE_KEY = 'todos-vanillajs';
+<span style="color:#999;font-style:italic">// Note this function is not part of helper.
+</span><span style="color:#999;font-style:italic">// It shouldn&#39;t be available for outside world so keep it outside
+</span><span style="color:#999;font-style:italic">// of exported class.
+</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">function</span> setTodos(todos, storageKey) {
+  <span style="color:#999;font-style:italic">// Clear local storage before saving to it
+</span><span style="color:#999;font-style:italic"></span>  localStorage.clear();
 
-// Note this function is not part of helper.
-// It shouldn't be available for outside world so keep it outside
-// of exported class.
-function setTodos(todos, storageKey) {
-  // Clear local storage before saving to it
-  localStorage.clear();
-
-  // Save todos in local storage
-  localStorage.setItem(storageKey, todos);
+  <span style="color:#999;font-style:italic">// Save todos in local storage
+</span><span style="color:#999;font-style:italic"></span>  localStorage.setItem(storageKey, todos);
 }
 
-class EnvironmentManager extends Helper {
+<span style="color:#6ab825;font-weight:bold">class</span> EnvironmentManager <span style="color:#6ab825;font-weight:bold">extends</span> Helper {
   _before() {
-    this.helpers['Nightmare'].amOnPage('/');
-    // console.log('before')
-    // Access Nightmare helper
-    // There's no semicolon at the end of this line!
-    this.helpers['Nightmare']
+    <span style="color:#6ab825;font-weight:bold">this</span>.helpers[<span style="color:#ed9d13">&#39;Nightmare&#39;</span>].amOnPage(<span style="color:#ed9d13">&#39;/&#39;</span>);
+    <span style="color:#999;font-style:italic">// console.log(&#39;before&#39;)
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#999;font-style:italic">// Access Nightmare helper
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#999;font-style:italic">// There&#39;s no semicolon at the end of this line!
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">this</span>.helpers[<span style="color:#ed9d13">&#39;Nightmare&#39;</span>]
 
-      // execute `setTodos` function in browser and pass
-      // TODOS and STORAGE_KEY parameters to it
-      .executeScript(setTodos, TODOS, STORAGE_KEY);
+      <span style="color:#999;font-style:italic">// execute `setTodos` function in browser and pass
+</span><span style="color:#999;font-style:italic"></span>      <span style="color:#999;font-style:italic">// TODOS and STORAGE_KEY parameters to it
+</span><span style="color:#999;font-style:italic"></span>      .executeScript(setTodos, TODOS, STORAGE_KEY);
 
-    // This one is important!
-    // `executeScript` runs in browser context. To be able to do
-    // that there needs to be page opened.
-    // Because of it we can't populate local storage before opening
-    // page but TodoMVC loads content on page load. So I have to refresh
-    // my page after filling up local storage.
-    return this.helpers['Nightmare'].refresh();
+    <span style="color:#999;font-style:italic">// This one is important!
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#999;font-style:italic">// `executeScript` runs in browser context. To be able to do
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#999;font-style:italic">// that there needs to be page opened.
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#999;font-style:italic">// Because of it we can&#39;t populate local storage before opening
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#999;font-style:italic">// page but TodoMVC loads content on page load. So I have to refresh
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#999;font-style:italic">// my page after filling up local storage.
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#6ab825;font-weight:bold">this</span>.helpers[<span style="color:#ed9d13">&#39;Nightmare&#39;</span>].refresh();
   }
 }
 
-module.exports = EnvironmentManager;
-</code></pre>
-
+module.exports = EnvironmentManager;</code></pre></div>
 <p>And the fixture is just a plain JSON file:</p>
-
-<pre><code class="language-javascript">// fixtures/todos.json
-{
-  &quot;todos&quot;: [
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// fixtures/todos.json
+</span><span style="color:#999;font-style:italic"></span>{
+  <span style="color:#ed9d13">&#34;todos&#34;</span>: [
     {
-      &quot;title&quot;: &quot;Learn codeceptJS&quot;,
-      &quot;completed&quot;: false,
-      &quot;id&quot;: 1483639709956
+      <span style="color:#ed9d13">&#34;title&#34;</span>: <span style="color:#ed9d13">&#34;Learn codeceptJS&#34;</span>,
+      <span style="color:#ed9d13">&#34;completed&#34;</span>: <span style="color:#6ab825;font-weight:bold">false</span>,
+      <span style="color:#ed9d13">&#34;id&#34;</span>: <span style="color:#3677a9">1483639709956</span>
     },
     {
-      &quot;title&quot;: &quot;Listen to the music&quot;,
-      &quot;completed&quot;: true,
-      &quot;id&quot;: 1483639712979
+      <span style="color:#ed9d13">&#34;title&#34;</span>: <span style="color:#ed9d13">&#34;Listen to the music&#34;</span>,
+      <span style="color:#ed9d13">&#34;completed&#34;</span>: <span style="color:#6ab825;font-weight:bold">true</span>,
+      <span style="color:#ed9d13">&#34;id&#34;</span>: <span style="color:#3677a9">1483639712979</span>
     },
     {
-      &quot;title&quot;: &quot;Party party party!&quot;,
-      &quot;completed&quot;: false,
-      &quot;id&quot;: 1483639723603
+      <span style="color:#ed9d13">&#34;title&#34;</span>: <span style="color:#ed9d13">&#34;Party party party!&#34;</span>,
+      <span style="color:#ed9d13">&#34;completed&#34;</span>: <span style="color:#6ab825;font-weight:bold">false</span>,
+      <span style="color:#ed9d13">&#34;id&#34;</span>: <span style="color:#3677a9">1483639723603</span>
     }
   ]
-}
-</code></pre>
-
+}</code></pre></div>
 <p><code>Fixtures</code> concept is not part of Codecept&rsquo;s features so this file is created
 manually without use of generator.</p>
 
@@ -784,65 +680,53 @@ executed and does <em>something</em>! :D</p>
 <p>Let&rsquo;s finally make those tests green by removing redundant <code>I.amOnPage('/')</code>
 calls and using existing tasks for edit, remove and state togglers tests instead
 of creating new ones.</p>
-
-<pre><code class="language-javascript">// tests/add_todo_test.js
-Scenario('User adds a new todo', (I, TodoList) =&gt; {
-  const todoContent = 'Learn testing with CodeceptJS';
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/add_todo_test.js
+</span><span style="color:#999;font-style:italic"></span>Scenario(<span style="color:#ed9d13">&#39;User adds a new todo&#39;</span>, (I, TodoList) =&gt; {
+  <span style="color:#6ab825;font-weight:bold">const</span> todoContent = <span style="color:#ed9d13">&#39;Learn testing with CodeceptJS&#39;</span>;
 
   TodoList.add(todoContent);
   I.see(todoContent, TodoList.listEl());
-  // ...
-</code></pre>
+  <span style="color:#a61717;background-color:#e3d2d2">// ...</span></code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/edit_todo_test.js
+</span><span style="color:#999;font-style:italic"></span>Feature(<span style="color:#ed9d13">&#39;Edit todo&#39;</span>);
 
-<pre><code class="language-javascript">// tests/edit_todo_test.js
-Feature('Edit todo');
+<span style="color:#6ab825;font-weight:bold">const</span> TODOS = require(<span style="color:#ed9d13">&#39;../fixtures/todos.js&#39;</span>);
 
-const TODOS = require('../fixtures/todos.js');
+Scenario(<span style="color:#ed9d13">&#39;User edits todo&#39;</span>, (I, TodoList) =&gt; {
+  <span style="color:#6ab825;font-weight:bold">const</span> oldContent = TODOS[<span style="color:#3677a9">0</span>].title;
+  <span style="color:#6ab825;font-weight:bold">const</span> newContent = <span style="color:#ed9d13">&#39;Todo content after edit&#39;</span>;
+  <span style="color:#6ab825;font-weight:bold">const</span> context    = TodoList.todoEl(<span style="color:#3677a9">1</span>);
 
-Scenario('User edits todo', (I, TodoList) =&gt; {
-  const oldContent = TODOS[0].title;
-  const newContent = 'Todo content after edit';
-  const context    = TodoList.todoEl(1);
+  TodoList.edit(<span style="color:#3677a9">1</span>, newContent);
+  <span style="color:#a61717;background-color:#e3d2d2">// ...</span></code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/remove_todo_test.js
+</span><span style="color:#999;font-style:italic"></span>Feature(<span style="color:#ed9d13">&#39;Remove todo&#39;</span>);
 
-  TodoList.edit(1, newContent);
-  // ...
-</code></pre>
+<span style="color:#6ab825;font-weight:bold">const</span> TODOS = require(<span style="color:#ed9d13">&#39;../fixture/todos.js&#39;</span>);
 
-<pre><code class="language-javascript">// tests/remove_todo_test.js
-Feature('Remove todo');
+Scenario(<span style="color:#ed9d13">&#39;User removes todo&#39;</span>, (I, TodoList) =&gt; {
+  <span style="color:#6ab825;font-weight:bold">const</span> todoContent = TODOS[<span style="color:#3677a9">0</span>].title;
 
-const TODOS = require('../fixture/todos.js');
+  TodoList.remove(<span style="color:#3677a9">1</span>);
+  <span style="color:#a61717;background-color:#e3d2d2">// ...</span></code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/state_togglers_test.js
+</span><span style="color:#999;font-style:italic"></span>Feature(<span style="color:#ed9d13">&#39;State togglers&#39;</span>)
 
-Scenario('User removes todo', (I, TodoList) =&gt; {
-  const todoContent = TODOS[0].title;
+<span style="color:#6ab825;font-weight:bold">const</span> TODOS = require(<span style="color:#ed9d13">&#39;../fixtures/todos.js&#39;</span>).todos;
 
-  TodoList.remove(1);
-  // ...
-</code></pre>
-
-<pre><code class="language-javascript">// tests/state_togglers_test.js
-Feature('State togglers')
-
-const TODOS = require('../fixtures/todos.js').todos;
-
-// Yay, no need for Before hook here,
-
-// first scenario doesn't require any changes.
-
-Scenario('User marks todo as undone', (I, TodoList) =&gt; {
-  const todoPosition = 2;
+<span style="color:#999;font-style:italic">// Yay, no need for Before hook here,
+</span><span style="color:#999;font-style:italic"></span>
+<span style="color:#999;font-style:italic">// first scenario doesn&#39;t require any changes.
+</span><span style="color:#999;font-style:italic"></span>
+Scenario(<span style="color:#ed9d13">&#39;User marks todo as undone&#39;</span>, (I, TodoList) =&gt; {
+  <span style="color:#6ab825;font-weight:bold">const</span> todoPosition = <span style="color:#3677a9">2</span>;
 
   TodoList.toggle(todoPosition);
   I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(todoPosition));
 
   I.refresh();
-  // Wait for todo to be loaded
-  I.waitForElement(TodoList.todoEl(todoPosition));
-  // Check toggler
-  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(todoPosition));
-});
-</code></pre>
-
+  <span style="color:#999;font-style:italic">// Wait for todo to be loaded
+</span><span style="color:#999;font-style:italic"></span>  I.waitForElement(TodoList.todoEl(todoPosition));
+  <span style="color:#999;font-style:italic">// Check toggler
+</span><span style="color:#999;font-style:italic"></span>  I.dontSeeCheckboxIsChecked(TodoList.todoToggleEl(todoPosition));
+});</code></pre></div>
 <h2 id="solve-the-riddle">Solve the riddle!</h2>
 
 <p>When I was testing adding and removing tasks I was basing on list with only one
@@ -856,87 +740,78 @@ of them. Because of that I let myself to ignore two cases:
 creating or removing one, assign it to some variable and then compare it with
 new count of tasks expecting it to increase or decrease properly. In case of
 creating a new item I&rsquo;m also gonna verify the content of <strong>last</strong> task.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// pages/TodoList.js
+</span><span style="color:#999;font-style:italic"></span>
+<span style="color:#999;font-style:italic">// Element getters
+</span><span style="color:#999;font-style:italic">//...
+</span><span style="color:#999;font-style:italic"></span>
+<span style="color:#999;font-style:italic">// Update this to handle both universal selector for todo
+</span><span style="color:#999;font-style:italic">// and one at specified position
+</span><span style="color:#999;font-style:italic"></span>todoEl(position) {
+  <span style="color:#6ab825;font-weight:bold">let</span> el = <span style="color:#ed9d13">&#39;.todo-list &gt; li&#39;</span>;
 
-<pre><code class="language-javascript">// pages/TodoList.js
+  <span style="color:#6ab825;font-weight:bold">if</span>(position)
+    el = [el, <span style="color:#ed9d13">`:nth-child(</span><span style="color:#ed9d13">${</span>position<span style="color:#ed9d13">}</span><span style="color:#ed9d13">)`</span>].join(<span style="color:#ed9d13">&#39;&#39;</span>);
 
-// Element getters
-//...
-
-// Update this to handle both universal selector for todo
-// and one at specified position
-todoEl(position) {
-  let el = '.todo-list &gt; li';
-
-  if(position)
-    el = [el, `:nth-child(${position})`].join('');
-
-  return el;
+  <span style="color:#6ab825;font-weight:bold">return</span> el;
 },
-// ...
-
-// Content getters
-// I'm using yield to pass result from script executed in browser
-// into scenario. It can be used only inside generator.
-getTodoCount: function* () {
-  return yield I.executeScript(el =&gt; {
-    // Find all todos and get length of resulting array
-    return document.querySelectorAll(el).length;
-  }, this.todoEl());
+<span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>
+<span style="color:#999;font-style:italic">// Content getters
+</span><span style="color:#999;font-style:italic">// I&#39;m using yield to pass result from script executed in browser
+</span><span style="color:#999;font-style:italic">// into scenario. It can be used only inside generator.
+</span><span style="color:#999;font-style:italic"></span>getTodoCount: <span style="color:#6ab825;font-weight:bold">function</span>* () {
+  <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#6ab825;font-weight:bold">yield</span> I.executeScript(el =&gt; {
+    <span style="color:#999;font-style:italic">// Find all todos and get length of resulting array
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#24909d">document</span>.querySelectorAll(el).length;
+  }, <span style="color:#6ab825;font-weight:bold">this</span>.todoEl());
 },
 
-// Interactions
-// ...
-</code></pre>
+<span style="color:#999;font-style:italic">// Interactions
+</span><span style="color:#999;font-style:italic"></span><span style="color:#a61717;background-color:#e3d2d2">// ...</span></code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/add_todo_test.js
+</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">const</span> assert = require(<span style="color:#ed9d13">&#39;assert&#39;</span>);
 
-<pre><code class="language-javascript">// tests/add_todo_test.js
-const assert = require('assert');
+Feature(<span style="color:#ed9d13">&#39;Add todo&#39;</span>);
 
-Feature('Add todo');
-
-// Note usage of generator instead of arrow function
-Scenario('User adds a new todo', function* (I, TodoList) {
-  const todoContent = 'Learn testing with CodeceptJS';
-  const todoCount = yield* TodoList.getTodoCount();
+<span style="color:#999;font-style:italic">// Note usage of generator instead of arrow function
+</span><span style="color:#999;font-style:italic"></span>Scenario(<span style="color:#ed9d13">&#39;User adds a new todo&#39;</span>, <span style="color:#6ab825;font-weight:bold">function</span>* (I, TodoList) {
+  <span style="color:#6ab825;font-weight:bold">const</span> todoContent = <span style="color:#ed9d13">&#39;Learn testing with CodeceptJS&#39;</span>;
+  <span style="color:#6ab825;font-weight:bold">const</span> todoCount = <span style="color:#6ab825;font-weight:bold">yield</span>* TodoList.getTodoCount();
 
   TodoList.add(todoContent);
 
-  const newTodoCount = yield* TodoList.getTodoCount();
-  const lastTodo = TodoList.todoEl(newTodoCount);
+  <span style="color:#6ab825;font-weight:bold">const</span> newTodoCount = <span style="color:#6ab825;font-weight:bold">yield</span>* TodoList.getTodoCount();
+  <span style="color:#6ab825;font-weight:bold">const</span> lastTodo = TodoList.todoEl(newTodoCount);
 
-  // Check if there's one more task on list
-  assert.equal(newTodoCount, todoCount + 1);
+  <span style="color:#999;font-style:italic">// Check if there&#39;s one more task on list
+</span><span style="color:#999;font-style:italic"></span>  assert.equal(newTodoCount, todoCount + <span style="color:#3677a9">1</span>);
 
   I.see(todoContent, lastTodo);
 
   I.refresh();
-  I.waitForText(todoContent, 1, lastTodo);
-});
-</code></pre>
+  I.waitForText(todoContent, <span style="color:#3677a9">1</span>, lastTodo);
+});</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/remove_todo_test.js
+</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">const</span> assert = require(<span style="color:#ed9d13">&#39;assert&#39;</span>);
 
-<pre><code class="language-javascript">// tests/remove_todo_test.js
-const assert = require('assert');
+Feature(<span style="color:#ed9d13">&#39;Remove todo&#39;</span>);
 
-Feature('Remove todo');
+<span style="color:#6ab825;font-weight:bold">const</span> TODOS = require(<span style="color:#ed9d13">&#39;../fixtures/todos.json&#39;</span>).todos;
 
-const TODOS = require('../fixtures/todos.json').todos;
+<span style="color:#999;font-style:italic">// Note usage of generator instead of arrow function
+</span><span style="color:#999;font-style:italic"></span>Scenario(<span style="color:#ed9d13">&#39;User removes todo&#39;</span>, <span style="color:#6ab825;font-weight:bold">function</span>* (I, TodoList) {
+  <span style="color:#6ab825;font-weight:bold">const</span> todoContent = TODOS[<span style="color:#3677a9">0</span>].title;
+  <span style="color:#6ab825;font-weight:bold">const</span> todoCount = <span style="color:#6ab825;font-weight:bold">yield</span>* TodoList.getTodoCount();
 
-// Note usage of generator instead of arrow function
-Scenario('User removes todo', function* (I, TodoList) {
-  const todoContent = TODOS[0].title;
-  const todoCount = yield* TodoList.getTodoCount();
+  TodoList.remove(<span style="color:#3677a9">1</span>);
 
-  TodoList.remove(1);
-
-  const newTodoCount = yield* TodoList.getTodoCount();
-  assert.equal(newTodoCount, todoCount - 1);
+  <span style="color:#6ab825;font-weight:bold">const</span> newTodoCount = <span style="color:#6ab825;font-weight:bold">yield</span>* TodoList.getTodoCount();
+  assert.equal(newTodoCount, todoCount - <span style="color:#3677a9">1</span>);
 
   I.dontSee(todoContent, TodoList.listEl());
 
   I.refresh();
   I.dontSee(todoContent, TodoList.listEl());
-});
-</code></pre>
-
+});</code></pre></div>
 <p>In order to get result of script executed in browser context into scenario
 context I use ES6 generator functions. If you&rsquo;re not familiar with them
 <a href="https://medium.com/@dtothefp/why-can-t-anyone-write-a-simple-es6-generators-tutorial-ec2bbdf6ff45#.h918s0un9" target="_blank">here&rsquo;s</a>
@@ -954,77 +829,68 @@ from fixture expecting only correct ones to be present on list.</p>
 
 <p>To avoid duplicating code responsible for checking if todos are visible on list
 I start with adding <code>hasTodos</code> and <code>hasNoTodos</code> methods to <code>TodoList</code> object:</p>
-
-<pre><code class="language-javascript">// pages/TodoList.js
-
-// ...
-
-// Expectations
-hasTodos(todos) {
-  todos.forEach(t =&gt; I.see(t.title, this.listEl()));
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// pages/TodoList.js
+</span><span style="color:#999;font-style:italic"></span>
+<span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>
+<span style="color:#999;font-style:italic">// Expectations
+</span><span style="color:#999;font-style:italic"></span>hasTodos(todos) {
+  todos.forEach(t =&gt; I.see(t.title, <span style="color:#6ab825;font-weight:bold">this</span>.listEl()));
 },
 
 hasNoTodos(todos) {
-  todos.forEach(t =&gt; I.dontSee(t.title, this.listEl()));
-}
-</code></pre>
-
+  todos.forEach(t =&gt; I.dontSee(t.title, <span style="color:#6ab825;font-weight:bold">this</span>.listEl()));
+}</code></pre></div>
 <p>Nothing fancy here, just iterate over array of todos and check if user see or
 doesn&rsquo;t see them on list.</p>
 
 <p>Now methods to interact with filters:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// pages/TodoList.js
+</span><span style="color:#999;font-style:italic"></span>  <span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>
+  <span style="color:#999;font-style:italic">// Element getters
+</span><span style="color:#999;font-style:italic"></span>  activeFilterEl: () =&gt; <span style="color:#ed9d13">&#39;.filters li:nth-child(2) a&#39;</span>,
+  completedFilterEl: () =&gt; <span style="color:#ed9d13">&#39;.filters li:nth-child(3) a&#39;</span>,
 
-<pre><code class="language-javascript">// pages/TodoList.js
-  // ...
-
-  // Element getters
-  activeFilterEl: () =&gt; '.filters li:nth-child(2) a',
-  completedFilterEl: () =&gt; '.filters li:nth-child(3) a',
-
-  // ...
-
-  // Interactions
-  selectCompleted() {
-    I.click(this.completedFilterEl());
+  <span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>
+  <span style="color:#999;font-style:italic">// Interactions
+</span><span style="color:#999;font-style:italic"></span>  selectCompleted() {
+    I.click(<span style="color:#6ab825;font-weight:bold">this</span>.completedFilterEl());
   },
 
   selectActive() {
-    I.click(this.activeFilterEl());
+    I.click(<span style="color:#6ab825;font-weight:bold">this</span>.activeFilterEl());
   },
 
-  // ...
-</code></pre>
-
+  <span style="color:#a61717;background-color:#e3d2d2">// ...</span></code></pre></div>
 <p>Finally I&rsquo;m creating new file for filters tests (still remember about test
 generator?):</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/filters_test.js
+</span><span style="color:#999;font-style:italic"></span>
+Feature(<span style="color:#ed9d13">&#39;Filters&#39;</span>);
 
-<pre><code class="language-javascript">// tests/filters_test.js
+<span style="color:#6ab825;font-weight:bold">const</span> TODOS           = require(<span style="color:#ed9d13">&#39;../fixtures/todos.js&#39;</span>).todos;
+<span style="color:#6ab825;font-weight:bold">const</span> TODOS_ACTIVE    = TODOS.filter(t =&gt; !t.completed);
+<span style="color:#6ab825;font-weight:bold">const</span> TODOS_COMPLETED = TODOS.filter(t =&gt; t.completed);
 
-Feature('Filters');
-
-const TODOS           = require('../fixtures/todos.js').todos;
-const TODOS_ACTIVE    = TODOS.filter(t =&gt; !t.completed);
-const TODOS_COMPLETED = TODOS.filter(t =&gt; t.completed);
-
-Scenario('User does not apply any filter', (I, TodoList) =&gt; {
+Scenario(<span style="color:#ed9d13">&#39;User does not apply any filter&#39;</span>, (I, TodoList) =&gt; {
   TodoList.hasTodos(TODOS);
 });
 
-Scenario('User selects only active tasks', (I, TodoList) =&gt; {
+Scenario(<span style="color:#ed9d13">&#39;User selects only active tasks&#39;</span>, (I, TodoList) =&gt; {
   TodoList.selectActive();
 
   TodoList.hasTodos(TODOS_ACTIVE);
   TodoList.doesntHaveTodos(TODOS_COMPLETED);
 });
 
-Scenario('User selects only completed tasks', (I, TodoList) =&gt; {
+Scenario(<span style="color:#ed9d13">&#39;User selects only completed tasks&#39;</span>, (I, TodoList) =&gt; {
   TodoList.selectCompleted();
 
   TodoList.hasTodos(TODOS_COMPLETED);
   TodoList.doesntHaveTodos(TODOS_ACTIVE);
-});
-</code></pre>
-
+});</code></pre></div>
 <p>Simple!</p>
 
 <h2 id="and-that-s-it">And&hellip; That&rsquo;s it!</h2>
