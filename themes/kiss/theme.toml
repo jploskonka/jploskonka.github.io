@@ -21,7 +21,6 @@ features = [
   "shortcodes",
   "single-column",
   "social-menu",
-  "syntax-highlighting",
 ]
 min_version = 0.28
 

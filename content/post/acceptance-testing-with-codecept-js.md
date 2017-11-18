@@ -58,7 +58,7 @@ Before starting make sure you have [node](https://nodejs.org/en/) and
 [yarn](https://yarnpkg.com/) packages installed and updated. I'm using node
 `8.9.1` and yarn `1.3.2`. You can check your versions with following commands:
 
-``` shell
+``` bash
 $ node -v
 $ yarn --version
 ```
@@ -66,13 +66,13 @@ $ yarn --version
 ### Setting up testing environment
 Let's start by creating new directory:
 
-``` shell
+``` bash
 $ mkdir codeceptjs_testing
 ```
 
 Then initialize yarn project:
 
-``` shell
+``` bash
 $ yarn init
 ```
 
@@ -96,7 +96,7 @@ doesn't matter, because I'm not expecting testing suite to be required anywhere.
 
 Now it's time to add CodeceptJS and Nightmare dependencies:
 
-``` shell
+``` bash
 $ yarn add --dev codeceptjs nightmare nightmare-upload
 # I'm using following versions:
 # codeceptjs: 1.0.3
@@ -106,7 +106,7 @@ $ yarn add --dev codeceptjs nightmare nightmare-upload
 
 Finally initialize Codecept environment:
 
-``` shell
+``` bash
 $ yarn run codeceptjs init
 ```
 
@@ -145,7 +145,7 @@ Codecept comes with bunch of handy generators to automate common development
 tasks. All files I'm creating in the course of this tutorial are added with
 generators, unless stated otherwise. You can create your first test by running:
 
-``` shell
+``` bash
 $ yarn run codeceptjs gt
 # gt—short for Generate Test
 ```
@@ -165,13 +165,13 @@ Scenario('User adds a new todo', (I) => {
 ```
 
 ## Good to know
-Before we jump into writing code it's a good idea to introduce two small
+Before we jump into writing code it's a good idea to introduce few small
 improvements into our workflow:
 
 ### Convenient command to run tests
 To run our tests you can use following command:
 
-``` shell
+``` bash
 $ yarn run codeceptjs run --steps
 ```
 
@@ -187,11 +187,13 @@ to `package.json` file:
 },
 "devDependencies": {
 // ...
+}
+
 ```
 
 Now tests can be run by using:
 
-``` shell
+``` bash
 $ yarn test
 ```
 
@@ -201,7 +203,7 @@ scenarios. To do that you can use you can use `--grep` option with `codeceptjs
 run` command. This'll look for matches in parameters of `Feature` and `Scenario`
 methods (**it's case sensitive!**), for example:
 
-``` shell
+``` bash
 $ yarn test -- --grep Add
 # Note usage of double dashes here to pass flag to codeceptjs binary instead of
 yarn
@@ -217,7 +219,6 @@ Just add `show: true` option to nightmare config:
   "url": "http://todomvc.com/examples/vanillajs",
   "show": true
 }
-// ...
 ```
 
 ## Back to code—adding a todo
@@ -247,7 +248,7 @@ Scenario('User adds a new todo', (I) => {
 
 Now run tests with:
 
-``` shell
+``` bash
 $ yarn test
 ```
 
@@ -298,7 +299,7 @@ great support for it!
 
 Start with a `page object` generator:
 
-``` shell
+``` bash
 $ yarn run codeceptjs gpo
 ```
 
@@ -668,7 +669,7 @@ clutter in helper code and store tasks JSON there.
 
 Let's start with helper generator:
 
-``` shell
+``` bash
 $ yarn run codeceptjs gh
 # gh—short for Generate Helper
 ```
@@ -767,6 +768,7 @@ Scenario('User adds a new todo', (I, TodoList) => {
   TodoList.add(todoContent);
   I.see(todoContent, TodoList.listEl());
   // ...
+}
 ```
 
 ``` javascript
@@ -782,6 +784,7 @@ Scenario('User edits todo', (I, TodoList) => {
 
   TodoList.edit(1, newContent);
   // ...
+}
 ```
 
 ``` javascript
@@ -795,6 +798,7 @@ Scenario('User removes todo', (I, TodoList) => {
 
   TodoList.remove(1);
   // ...
+}
 ```
 
 ``` javascript
@@ -860,10 +864,8 @@ getTodoCount: function* () {
     // Find all todos and get length of resulting array
     return document.querySelectorAll(el).length;
   }, this.todoEl());
-},
+}
 
-// Interactions
-// ...
 ```
 
 ``` javascript
@@ -971,8 +973,6 @@ Now methods to interact with filters:
   selectActive() {
     I.click(this.activeFilterEl());
   },
-
-  // ...
 ```
 
 Finally I'm creating new file for filters tests (still remember about test
