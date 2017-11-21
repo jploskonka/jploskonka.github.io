@@ -16,8 +16,8 @@ may be in HTML selectors of elements user would interact with (although I
 haven't tested it so can't be sure).
 
 ## tl;dr
-Just check out the code
-[here](https://github.com/jploskonka/testing-with-codeceptjs/tree/v2.1.1).
+Just check out sample code
+[here](https://github.com/jploskonka/testing-with-codeceptjs/tree/v3.0.0).
 
 ## What is TodoMVC?
 [TodoMVC](http://todomvc.com/) is a project created to help developers decide
@@ -1030,8 +1030,8 @@ definitely one of most (if not the most) pleasant JS testing tool available
 right now. Big thanks to [Michael](https://github.com/DavertMik) for maintaining
 it and to you for going through this tutorial!
 
-You can grab code from
-[here](https://github.com/jploskonka/testing-with-codeceptjs/tree/v2.1.1).
+You can check out code based on this
+[here](https://github.com/jploskonka/testing-with-codeceptjs/tree/v3.0.0).
 
 ## What's next?
 If you want to play little bit more with this I'd start with rethinking
