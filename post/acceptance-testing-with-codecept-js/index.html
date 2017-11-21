@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <meta name="keywords" content="***REMOVED***"/>
 
-<title>Acceptance testing with CodeceptJS | jploskonka</title>
+<title>Acceptance testing with CodeceptJS | code’n’roll.it</title>
 
 <link rel="stylesheet" href="https://jploskonka.github.io/css/style.css"/>
 <link rel='stylesheet' href="https://jploskonka.github.io/css/custom.css"/>
@@ -16,7 +16,7 @@
   <div class="container">
     <nav class="nav">
       <div class="nav-left">
-        <a class="nav-item" href="https://jploskonka.github.io"><h1 class="title is-4">jploskonka</h1></a>
+        <a class="nav-item" href="https://jploskonka.github.io"><h1 class="title is-4">code’n’roll.it</h1></a>
       </div>
       <div class="nav-right">
         <nav class="nav-item level is-mobile"><a class="level-item" href='mailto:ploskonkajakub@gmail.com' target='_blank' rel='noopener'>
@@ -688,7 +688,7 @@ of creating new ones.</p>
 </span><span style="color:#999;font-style:italic"></span>}</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/edit_todo_test.js
 </span><span style="color:#999;font-style:italic"></span>Feature(<span style="color:#ed9d13">&#39;Edit todo&#39;</span>);
 
-<span style="color:#6ab825;font-weight:bold">const</span> TODOS = require(<span style="color:#ed9d13">&#39;../fixtures/todos.js&#39;</span>);
+<span style="color:#6ab825;font-weight:bold">const</span> TODOS = require(<span style="color:#ed9d13">&#39;../fixtures/todos.json&#39;</span>);
 
 Scenario(<span style="color:#ed9d13">&#39;User edits todo&#39;</span>, (I, TodoList) =&gt; {
   <span style="color:#6ab825;font-weight:bold">const</span> oldContent = TODOS[<span style="color:#3677a9">0</span>].title;
@@ -700,7 +700,7 @@ Scenario(<span style="color:#ed9d13">&#39;User edits todo&#39;</span>, (I, TodoL
 </span><span style="color:#999;font-style:italic"></span>}</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/remove_todo_test.js
 </span><span style="color:#999;font-style:italic"></span>Feature(<span style="color:#ed9d13">&#39;Remove todo&#39;</span>);
 
-<span style="color:#6ab825;font-weight:bold">const</span> TODOS = require(<span style="color:#ed9d13">&#39;../fixture/todos.js&#39;</span>);
+<span style="color:#6ab825;font-weight:bold">const</span> TODOS = require(<span style="color:#ed9d13">&#39;../fixture/todos.json&#39;</span>);
 
 Scenario(<span style="color:#ed9d13">&#39;User removes todo&#39;</span>, (I, TodoList) =&gt; {
   <span style="color:#6ab825;font-weight:bold">const</span> todoContent = TODOS[<span style="color:#3677a9">0</span>].title;
@@ -710,7 +710,7 @@ Scenario(<span style="color:#ed9d13">&#39;User removes todo&#39;</span>, (I, Tod
 </span><span style="color:#999;font-style:italic"></span>}</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// tests/state_togglers_test.js
 </span><span style="color:#999;font-style:italic"></span>Feature(<span style="color:#ed9d13">&#39;State togglers&#39;</span>)
 
-<span style="color:#6ab825;font-weight:bold">const</span> TODOS = require(<span style="color:#ed9d13">&#39;../fixtures/todos.js&#39;</span>).todos;
+<span style="color:#6ab825;font-weight:bold">const</span> TODOS = require(<span style="color:#ed9d13">&#39;../fixtures/todos.json&#39;</span>).todos;
 
 <span style="color:#999;font-style:italic">// Yay, no need for Before hook here,
 </span><span style="color:#999;font-style:italic"></span>
@@ -866,7 +866,7 @@ generator?):</p>
 </span><span style="color:#999;font-style:italic"></span>
 Feature(<span style="color:#ed9d13">&#39;Filters&#39;</span>);
 
-<span style="color:#6ab825;font-weight:bold">const</span> TODOS           = require(<span style="color:#ed9d13">&#39;../fixtures/todos.js&#39;</span>).todos;
+<span style="color:#6ab825;font-weight:bold">const</span> TODOS           = require(<span style="color:#ed9d13">&#39;../fixtures/todos.json&#39;</span>).todos;
 <span style="color:#6ab825;font-weight:bold">const</span> TODOS_ACTIVE    = TODOS.filter(t =&gt; !t.completed);
 <span style="color:#6ab825;font-weight:bold">const</span> TODOS_COMPLETED = TODOS.filter(t =&gt; t.completed);
 
