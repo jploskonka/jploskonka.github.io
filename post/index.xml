@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; &lt;a href=&#34;https://github.com/jploskonka&#34;&gt;jploskonka&lt;/a&gt; 2017</copyright>
-    <lastBuildDate>Fri, 13 Jan 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 21 Nov 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://jploskonka.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Running application before CodeceptJS tests.</title>
+      <link>https://jploskonka.github.io/post/how-to-run-app-with-codecept-js/</link>
+      <pubDate>Tue, 21 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://jploskonka.github.io/post/how-to-run-app-with-codecept-js/</guid>
+      <description>In my last post I was writing about testing TodoMVC application with CodeceptJS. For sake of simplicity I&amp;rsquo;ve used online version of TodoMVC vanillajs example and I&amp;rsquo;ve been running my tests right on the project website. It might&amp;rsquo;ve been good enough for course of the tutorial but it&amp;rsquo;s not very real-world use case—you don&amp;rsquo;t want to mess around with the production environment from your tests. Instead of that it&amp;rsquo;d be good to automatically run the application just before running test suite and then shut it down when testing is done.</description>
+    </item>
     
     <item>
       <title>Acceptance testing with CodeceptJS</title>

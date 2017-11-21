@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="keywords" content="***REMOVED***"/>
+
+<title>Running application before CodeceptJS tests. | code’n’roll.it</title>
+
+<link rel="stylesheet" href="https://jploskonka.github.io/css/style.css"/>
+<link rel='stylesheet' href="https://jploskonka.github.io/css/custom.css"/>
+</head>
+<body>
+
+<section class="section">
+  <div class="container">
+    <nav class="nav">
+      <div class="nav-left">
+        <a class="nav-item" href="https://jploskonka.github.io"><h1 class="title is-4">code’n’roll.it</h1></a>
+      </div>
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile"><a class="level-item" href='mailto:ploskonkajakub@gmail.com' target='_blank' rel='noopener'>
+            <span class="icon">
+            </span>
+          </a><a class="level-item" href='https://github.com/jploskonka' target='_blank' rel='noopener'>
+            <span class="icon">
+            </span>
+          </a><a class="level-item" href='https://twitter.com/codenrollit' target='_blank' rel='noopener'>
+            <span class="icon">
+            </span>
+          </a></nav>
+      </div>
+    </nav>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="subtitle is-6 is-pulled-right">
+      
+    </div>
+    <h2 class="subtitle is-6">November 21, 2017</h2>
+    <h1 class="title">Running application before CodeceptJS tests.</h1>
+      
+    <div class="content">
+      
+
+<p>In my last post I was writing about <a href="http://codenroll.it/acceptance-testing-with-codecept-js/" target="_blank">testing TodoMVC application with
+CodeceptJS</a>. For sake
+of simplicity I&rsquo;ve used online version of <a href="http://todomvc.com/examples/vanillajs/" target="_blank">TodoMVC vanillajs
+example</a> and I&rsquo;ve been running my tests
+right on the project website. It might&rsquo;ve been good enough for course of the
+tutorial but it&rsquo;s not very real-world use case—you don&rsquo;t want to mess around
+with the production environment from your tests. Instead of that it&rsquo;d be
+good to automatically run the application just before running test suite and
+then shut it down when testing is done.</p>
+
+<h2 id="tl-dr">tl;dr</h2>
+
+<p>Checkout sample repository
+<a href="https://github.com/jploskonka/testing-with-codeceptjs" target="_blank">here</a></p>
+
+<h2 id="how">How?</h2>
+
+<p>Codecept provides <a href="http://codecept.io/basics/#bootstrap" target="_blank">bootstrap</a> and
+<a href="http://codecept.io/basics/#teardown" target="_blank">teardown</a> hooks executed respectively
+before and after all tests. Those are perfect for use case like this one.</p>
+
+<p>In <code>Bootstrap</code> hook I&rsquo;ll use node&rsquo;s <code>child_process.exec</code> method to run
+application. After it I have to block tests execution until app is ready to
+receive requests and send some response.</p>
+
+<p>Then in <code>Teardown</code> part I&rsquo;ll kill application with usage of
+<a href="https://www.npmjs.com/package/ps-tree" target="_blank">ps-tree</a> package.
+I can&rsquo;t use native nodes <a href="https://nodejs.org/api/child_process.html#child_process_child_kill_signal" target="_blank"><code>child_process.kill</code></a>
+because it would kill only child process itself. However <code>child_process.exec</code>
+doesn&rsquo;t spawn application as tests process child—it spawns shell inside which
+command is executed. So application is actually a child of a child of codeceptjs
+process. What is interesting here is that application itself can spawn multiple
+next processes and those also needs to be killed.</p>
+
+<p>In order to keep track of http server process and to keep bootstrap/teardown
+hooks code cleaner I&rsquo;m gonna create <code>AppManager</code> class which I&rsquo;d like to use
+like this:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#999;font-style:italic">// Initialize with some config:
+</span><span style="color:#999;font-style:italic"></span>appManager = <span style="color:#6ab825;font-weight:bold">new</span> AppManager({
+  host: <span style="color:#ed9d13">&#39;http://example.com&#39;</span>, 
+  port: <span style="color:#3677a9">3000</span>,
+})
+
+<span style="color:#999;font-style:italic">// To start application:
+</span><span style="color:#999;font-style:italic"></span>appManager.start()
+
+<span style="color:#999;font-style:italic">// And to shut-down application
+</span><span style="color:#999;font-style:italic"></span>appManager.close()</code></pre></div>
+<p>Let&rsquo;s start by creating <code>support</code> directory where I&rsquo;d put <code>AppManager.js</code>,
+<code>bootstrap.js</code> and <code>teardown.js</code> files:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ mkdir support
+<span style="color:#999;font-style:italic"># And create empty file there
+</span><span style="color:#999;font-style:italic"></span>$ touch support/appManager.js support/bootstrap.js support/teardown.js</code></pre></div>
+<p>Now it&rsquo;s time for <code>AppManager</code> class, start with constructor:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#999;font-style:italic">// support/appManager.js
+</span><span style="color:#999;font-style:italic"></span>
+<span style="color:#6ab825;font-weight:bold">const</span> defaultConfig = {
+  host: <span style="color:#ed9d13">&#39;localhost&#39;</span>,
+  port: <span style="color:#3677a9">3000</span>,
+  appCommand: <span style="color:#ed9d13">&#39;yarn app&#39;</span>
+};
+
+<span style="color:#999;font-style:italic">// How long to wait for app to start.
+</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">const</span> APP_TIMEOUT = <span style="color:#3677a9">4000</span>;
+
+<span style="color:#6ab825;font-weight:bold">class</span> AppManager {
+  constructor(config) {
+    <span style="color:#999;font-style:italic">// Used to keep reference to app process
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">this</span>._app = <span style="color:#6ab825;font-weight:bold">null</span>;
+
+    <span style="color:#999;font-style:italic">// Merge config with defaultConfig
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">this</span>.config = <span style="color:#24909d">Object</span>.assign(defaultConfig, config);
+  }
+};
+
+<span style="color:#6ab825;font-weight:bold">const</span> appManager = <span style="color:#6ab825;font-weight:bold">new</span> AppManager({});
+
+module.exports = appManager;</code></pre></div>
+<p>I&rsquo;m exporting instance of <code>AppManager</code> not class, to easily require it in
+multiple places and still get the same object. If I created new instance in
+different modules I&rsquo;d lost track of <code>app</code> property and won&rsquo;t be able to close
+it during teardown.</p>
+
+<p>Next thing is to create <code>start</code> method. To wait until app is ready I&rsquo;m using
+<a href="https://www.npmjs.com/package/tcp-port-used" target="_blank"><code>tcp-port-used</code></a> package, so start
+by adding it:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ yarn add tcp-port-used</code></pre></div>
+<p>And finally implement the <code>start</code> method:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#999;font-style:italic">// support/appManager.js
+</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">const</span> cp = require(<span style="color:#ed9d13">&#39;child_process&#39;</span>);
+<span style="color:#6ab825;font-weight:bold">const</span> tcpPortUsed = require(<span style="color:#ed9d13">&#39;tcp-port-used&#39;</span>);
+
+<span style="color:#6ab825;font-weight:bold">class</span> AppManager {
+  <span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>
+  start(callback) {
+    console.log(<span style="color:#ed9d13">`Starting app at: </span><span style="color:#ed9d13">${</span><span style="color:#6ab825;font-weight:bold">this</span>.config.host<span style="color:#ed9d13">}</span><span style="color:#ed9d13">:</span><span style="color:#ed9d13">${</span><span style="color:#6ab825;font-weight:bold">this</span>.config.port<span style="color:#ed9d13">}</span><span style="color:#ed9d13">`</span>);
+
+    <span style="color:#999;font-style:italic">// Spawn shell and execute appCommand
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">this</span>.app = cp.exec(<span style="color:#6ab825;font-weight:bold">this</span>.config.appCommand);
+
+    <span style="color:#999;font-style:italic">// Block execution of tests till app is upp
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">this</span>.waitForApp(callback);
+  }
+
+  _waitForApp(callback) {
+    <span style="color:#999;font-style:italic">// third argument to waitUntilUsedOnHost is interval
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#999;font-style:italic">// how often it should check if app is already started.
+</span><span style="color:#999;font-style:italic"></span>    tcpPortUsed
+      .waitUntilUsedOnHost(<span style="color:#6ab825;font-weight:bold">this</span>.config.port, <span style="color:#6ab825;font-weight:bold">this</span>.config.host, <span style="color:#3677a9">500</span>, APP_TIMEOUT)
+      .then(() =&gt; {
+        console.log(<span style="color:#ed9d13">`Application started, running tests.`</span>);
+        callback();
+      });
+  }
+}</code></pre></div>
+<p>And <code>bootstrap.js</code> file:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#999;font-style:italic">// bootstrap.js
+</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">const</span> appManager = require(<span style="color:#ed9d13">&#39;./appManager.js&#39;</span>);
+
+module.exports = <span style="color:#6ab825;font-weight:bold">function</span>(done) {
+  appManager.start(done);
+}</code></pre></div>
+<p>By exporting function with <code>done</code> attribute from bootstrap file we tell Codecept
+that it should wait with proceeding further until <code>done</code> callback is called. So
+I&rsquo;m passing it to <code>start</code> method where it&rsquo;s executed after application is up.</p>
+
+<p>Finally add locations of bootstrap and teardown files in <code>codecept.json</code> file
+and update Nightmare URL to match local application:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#999;font-style:italic">// codecept.json
+</span><span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>  <span style="color:#ed9d13">&#34;Nightmare&#34;</span>: {
+    <span style="color:#ed9d13">&#34;url&#34;</span>: <span style="color:#ed9d13">&#34;http://localhost:8080/&#34;</span>
+  },
+<span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span><span style="color:#ed9d13">&#34;bootstrap&#34;</span>: <span style="color:#ed9d13">&#34;./support/bootstrap.js&#34;</span>,
+<span style="color:#ed9d13">&#34;teardown&#34;</span>: <span style="color:#ed9d13">&#34;./support/teardown.js&#34;</span>,
+<span style="color:#ed9d13">&#34;mocha&#34;</span>: {},</code></pre></div>
+<p>Super, let&rsquo;s run our tests and see what happens:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">$ yarn run test</code></pre></div>
+<p>It looks OK, application is started as expected and first test waits for it.
+After last scenario it freezes forever because we didn&rsquo;t kill it and Codecept
+still thinks there&rsquo;s something going on.</p>
+
+<h3 id="clean-up-on-teardown">Clean up on teardown</h3>
+
+<p>Start with adding <code>ps-tree</code> dependency:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ yarn add ps-tree</code></pre></div>
+<p>Now comes the <code>close</code> method of <code>AppManager</code> class:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#999;font-style:italic">// support/appManager.js
+</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">const</span> psTree = require(<span style="color:#ed9d13">&#39;ps-tree&#39;</span>);
+
+<span style="color:#6ab825;font-weight:bold">class</span> AppManager {
+  <span style="color:#999;font-style:italic">// ...
+</span><span style="color:#999;font-style:italic"></span>  close() {
+    psTree(<span style="color:#6ab825;font-weight:bold">this</span>.app.pid, (err, children) =&gt; {
+      <span style="color:#6ab825;font-weight:bold">const</span> pids = children.map(p =&gt; p.PID);
+
+      cp.spawn(<span style="color:#ed9d13">&#39;kill&#39;</span>, [<span style="color:#ed9d13">&#39;-9&#39;</span>].concat(pids));
+    });
+  }
+}</code></pre></div>
+<p>Yeah, that&rsquo;s all! <code>psTree</code> gets app process pid, then it passes array of
+children processes as second callback parameter. By killing all of them I&rsquo;m
+sure there won&rsquo;t be any orphaned process left running in the background.</p>
+
+<p>I&rsquo;m using <code>kill -9</code> here because I don&rsquo;t need to worry about gracefully shutting
+down application. However in real-world use case it may be a good idea to
+consider using <code>SIGTERM</code> to handle shutting down.</p>
+
+<p>Last thing is to call our <code>close</code> from teardown hook:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#999;font-style:italic">// support/teardown.js
+</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">const</span> appManager = require(<span style="color:#ed9d13">&#39;./appManager.js&#39;</span>);
+
+module.exports = <span style="color:#6ab825;font-weight:bold">function</span>() {
+  appManager.close();
+}</code></pre></div>
+<h2 id="possible-improvements">Possible improvements</h2>
+
+<p>Basically that&rsquo;s it. For complete production usage you&rsquo;d probably want to pass
+host and port to application when starting it, I&rsquo;d also think about keeping
+config in separate module and then using <a href="http://codecept.io/configuration/#dynamic-configuration" target="_blank">codecept&rsquo;s dynamic
+config</a> file to also
+get necessary details from it.</p>
+
+<p>For CI integration it may be useful to pass some data as environment variables,
+this could be easily done when creating <code>AppManager</code> instance, for example:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#6ab825;font-weight:bold">const</span> config = {
+  host: process.env.APP_HOST,
+  port: process.env.APP_PORT,
+  appPath: <span style="color:#ed9d13">&#39;../some/path/to/app/dir&#39;</span>,
+  appCommand: <span style="color:#ed9d13">&#39;run my app&#39;</span>
+}
+
+<span style="color:#6ab825;font-weight:bold">const</span> appManager = <span style="color:#6ab825;font-weight:bold">new</span> AppManager(config);</code></pre></div>
+<p>Thanks for reading!</p>
+
+    </div>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <aside><div id="disqus_thread"></div></aside>
+    <script type="text/javascript">
+      var disqus_shortname = 'codenroll-it';
+      (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://github.com/jploskonka">jploskonka</a> 2017</p>
+    
+      <p>Powered by <a href="https://gohugo.io/">Hugo</a> &amp; <a href="https://github.com/ribice/kiss">Kiss</a>.</p>
+    
+  </div>
+</section>
+
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-89853504-1', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+</html>
