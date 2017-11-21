@@ -775,7 +775,7 @@ Scenario('User adds a new todo', (I, TodoList) => {
 // tests/edit_todo_test.js
 Feature('Edit todo');
 
-const TODOS = require('../fixtures/todos.js');
+const TODOS = require('../fixtures/todos.json');
 
 Scenario('User edits todo', (I, TodoList) => {
   const oldContent = TODOS[0].title;
@@ -791,7 +791,7 @@ Scenario('User edits todo', (I, TodoList) => {
 // tests/remove_todo_test.js
 Feature('Remove todo');
 
-const TODOS = require('../fixture/todos.js');
+const TODOS = require('../fixture/todos.json');
 
 Scenario('User removes todo', (I, TodoList) => {
   const todoContent = TODOS[0].title;
@@ -805,7 +805,7 @@ Scenario('User removes todo', (I, TodoList) => {
 // tests/state_togglers_test.js
 Feature('State togglers')
 
-const TODOS = require('../fixtures/todos.js').todos;
+const TODOS = require('../fixtures/todos.json').todos;
 
 // Yay, no need for Before hook here,
 
@@ -983,7 +983,7 @@ generator?):
 
 Feature('Filters');
 
-const TODOS           = require('../fixtures/todos.js').todos;
+const TODOS           = require('../fixtures/todos.json').todos;
 const TODOS_ACTIVE    = TODOS.filter(t => !t.completed);
 const TODOS_COMPLETED = TODOS.filter(t => t.completed);
 
