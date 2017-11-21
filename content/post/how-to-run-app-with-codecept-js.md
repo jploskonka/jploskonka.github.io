@@ -1,7 +1,6 @@
 ---
-title: Running application before CodeceptJS tests
-date: "2017-07-12T17:12:33.962Z"
-draft: true
+title: Running application before CodeceptJS tests.
+date: 2017-11-21
 ---
 
 In my last post I was writing about [testing TodoMVC application with
@@ -14,72 +13,28 @@ with the production environment from your tests. Instead of that it'd be
 good to automatically run the application just before running test suite and
 then shut it down when testing is done.
 
-And that's exactly what I'm gonna show you today. Let's start!
+## tl;dr
+Checkout sample repository
+[here](https://github.com/jploskonka/testing-with-codeceptjs)
 
-## Sample application
-I'm gonna use very simple ExpressJS application that just renders `Hello world`
-on homepage. Let's start by creating new directory and initializing yarn project
-in it:
 
-``` shell
-yarn init -y
-```
-
-Now add `express` dependency:
-
-``` shell
-yarn add express
-```
-
-And create `app.js` file with our simple application:
-
-```js
-// app.js
-const express = require('express');
-const app = express();
-
-const APP_PORT = process.env.APP_PORT || 3000;
-
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
-app.listen(PORT, () => {
-  console.log(`Application listening at port: ${APP_PORT}`);
-});
-```
-
-To run application use:
-``` shell
-node app.js
-```
-
-If everything works OK you can visit
-[http://localhost:3000](http://localhost:3000) and you should see the `Hello
-world` text.
-
-## Running application with tests
-### The idea
-Now that it's possible to easily run local application let's glue it together
-with Codecept so every time when the `yarn run test` command is ussed
-it'd automatically run our http server with TodoMVC. It also should shut down
-the app when tests are done.
-
-### How?
+## How?
 Codecept provides [bootstrap](http://codecept.io/basics/#bootstrap) and
-[teardown](http://codecept.io/basics/#teardown) hooks that're executed once
+[teardown](http://codecept.io/basics/#teardown) hooks executed respectively
 before and after all tests. Those are perfect for use case like this one.
 
-In `Bootstrap` hook I'll use node's `child_process.exec` method to spawn a new
-shell and execute there command to run web application. In the meantime I have
-to wait with running first scenario as long as my server is not yet responding.
+In `Bootstrap` hook I'll use node's `child_process.exec` method to run
+application. After it I have to block tests execution until app is ready to
+receive requests and send some response.
 
-Then in `Teardown` part I'll kill spawned shell and all of it's children with
-usage of [ps-tree](https://www.npmjs.com/package/ps-tree) package. I can't use
-native node's
-[`child_process.kill`](https://nodejs.org/api/child_process.html#child_process_child_kill_signal)
-because it'd kill only first child of our process—which in this case would be
-shell spawned by `exec` and application would be still running.
+Then in `Teardown` part I'll kill application with usage of
+[ps-tree](https://www.npmjs.com/package/ps-tree) package.
+I can't use native nodes [`child_process.kill`](https://nodejs.org/api/child_process.html#child_process_child_kill_signal)
+because it would kill only child process itself. However `child_process.exec`
+doesn't spawn application as tests process child—it spawns shell inside which
+command is executed. So application is actually a child of a child of codeceptjs
+process. What is interesting here is that application itself can spawn multiple
+next processes and those also needs to be killed.
 
 In order to keep track of http server process and to keep bootstrap/teardown
 hooks code cleaner I'm gonna create `AppManager` class which I'd like to use
@@ -88,13 +43,14 @@ like this:
 ``` js
 // Initialize with some config:
 appManager = new AppManager({
-  host: 'http://example.com', port: 3000
+  host: 'http://example.com', 
+  port: 3000,
 })
 
 // To start application:
 appManager.start()
 
-// And to close application
+// And to shut-down application
 appManager.close()
 ```
 
@@ -107,16 +63,15 @@ $ mkdir support
 $ touch support/appManager.js support/bootstrap.js support/teardown.js
 ```
 
-Note that commands are executed from project main directory, not app.
-
 Now it's time for `AppManager` class, start with constructor:
 
 ``` js
+// support/appManager.js
+
 const defaultConfig = {
   host: 'localhost',
   port: 3000,
-  appPath: './vanillajs'
-  appCommand: 'yarn run start'
+  appCommand: 'yarn app'
 };
 
 // How long to wait for app to start.
@@ -126,6 +81,7 @@ class AppManager {
   constructor(config) {
     // Used to keep reference to app process
     this._app = null;
+
     // Merge config with defaultConfig
     this.config = Object.assign(defaultConfig, config);
   }
@@ -137,18 +93,16 @@ module.exports = appManager;
 ```
 
 I'm exporting instance of `AppManager` not class, to easily require it in
-multiple places and still get the same object. If I create new instance in
-different modules I'd lost track of `_app` property and won't be able to close
+multiple places and still get the same object. If I created new instance in
+different modules I'd lost track of `app` property and won't be able to close
 it during teardown.
 
-Next thing is to create `start` method. It should accept a callback to execute
-it after application is ready to let know Codecept that it can start running
-tests. To wait until app is ready I'm using
+Next thing is to create `start` method. To wait until app is ready I'm using
 [`tcp-port-used`](https://www.npmjs.com/package/tcp-port-used) package, so start
 by adding it:
 
 ``` shell
-$ yarn add --dev tcp-port-used
+$ yarn add tcp-port-used
 ```
 
 And finally implement the `start` method:
@@ -162,13 +116,13 @@ class AppManager {
   // ...
 
   start(callback) {
-    console.log(`Starting app at: ${this.host}:${this.port}`);
+    console.log(`Starting app at: ${this.config.host}:${this.config.port}`);
 
-    // Spawn shell and execute appCommand in appPath directory
-    this._app = cp.exec(this.config.appCommand, { cwd: this.config.appPath });
+    // Spawn shell and execute appCommand
+    this.app = cp.exec(this.config.appCommand);
 
     // Block execution of tests till app is upp
-    this._waitForApp(callback);
+    this.waitForApp(callback);
   }
 
   _waitForApp(callback) {
@@ -182,8 +136,6 @@ class AppManager {
       });
   }
 }
-
-// ...
 ```
 
 And `bootstrap.js` file:
@@ -214,7 +166,6 @@ and update Nightmare URL to match local application:
 "bootstrap": "./support/bootstrap.js",
 "teardown": "./support/teardown.js",
 "mocha": {},
-// ...
 ```
 
 Super, let's run our tests and see what happens:
@@ -231,7 +182,7 @@ still thinks there's something going on.
 Start with adding `ps-tree` dependency:
 
 ``` shell
-$ yarn add --dev ps-tree
+$ yarn add ps-tree
 ```
 
 Now comes the `close` method of `AppManager` class:
@@ -243,20 +194,21 @@ const psTree = require('ps-tree');
 class AppManager {
   // ...
   close() {
-    psTree(this._app.pid, (err, children) => {
-      cp.spawn('kill', ['-9'].concat(children.map(p => p.PID)))
+    psTree(this.app.pid, (err, children) => {
+      const pids = children.map(p => p.PID);
+
+      cp.spawn('kill', ['-9'].concat(pids));
     });
   }
 }
 ```
 
-Yeah, that's all! `psTree` gets process pid as first parameter, then it calls
-callback with two parameters. The second attribute is an array of all children
-of our application process, then only thing that's necessary is to spawn `kill`
-command with list of pids of child processes.
+Yeah, that's all! `psTree` gets app process pid, then it passes array of
+children processes as second callback parameter. By killing all of them I'm
+sure there won't be any orphaned process left running in the background.
 
 I'm using `kill -9` here because I don't need to worry about gracefully shutting
-down application. However in real-world use case it might be good idea to
+down application. However in real-world use case it may be a good idea to
 consider using `SIGTERM` to handle shutting down.
 
 Last thing is to call our `close` from teardown hook:
@@ -291,7 +243,4 @@ const config = {
 const appManager = new AppManager(config);
 ```
 
-I'd also use more reasonable directories structure instead of throwing
-application code just in the middle of files related with tests.
-
-Thank you for reading!
+Thanks for reading!
