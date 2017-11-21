@@ -1,5 +1,5 @@
 ---
-title: Running application before CodeceptJS tests.
+title: How to run application before CodeceptJS tests.
 date: 2017-11-21
 ---
 
@@ -242,5 +242,8 @@ const config = {
 
 const appManager = new AppManager(config);
 ```
+
+Too see working example you can checkout code
+[here](https://github.com/jploskonka/testing-with-codeceptjs).
 
 Thanks for reading!
