@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<meta name="keywords" content=""/>
+<meta name="description" content="{{ .Description  }}"/>
+<meta name="keywords" content="{{ delimit .Keywords  ", " }}"/>
 {{ if eq .IsHome false }}
 <title>{{ .Title }} | {{ .Site.Title }}</title>
 {{ else }}

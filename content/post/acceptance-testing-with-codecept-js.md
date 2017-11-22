@@ -1,6 +1,8 @@
 ---
 title: Acceptance testing with CodeceptJS
 aliases: ['/acceptance-testing-with-codecept-js']
+description: Comprehensive tutorial explaining how to use CodeceptJS with NightmareJS backend as a tool for writing acceptance tests for TodoMVC application.
+keywords: codeceptjs tutorial, acceptance testing with codeceptjs, how to use codeceptjs, acceptance test codeceptjs, how to use codeceptjs tutorial, javascript testing, javascript acceptance testing, javascript end-to-end tests, codeceptjs nightmarejs, codeceptjs with nightmare, codeceptjs, tests for todomvc, todomvc testing
 date: 2017-01-13
 ---
 

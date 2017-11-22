@@ -1,5 +1,7 @@
 ---
 title: How to run application before CodeceptJS tests.
+description: A short guide on how to automatically run local application before CodeceptJS tests suite.
+keywords: codeceptjs tutorial, codeceptjs bootstrap, codeceptjs before tests, codeceptjs run application, codeceptjs how to run app, how to run app with codeceptjs, codeceptjs testing, acceptance testing with codeceptjs, testing, test, javascript
 date: 2017-11-21
 ---
 
