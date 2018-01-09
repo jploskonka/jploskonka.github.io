@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 DIR=$(dirname "$0")
 
 if [[ $(git status -s) ]]
@@ -12,7 +14,6 @@ echo "Deleting old publication"
 rm -rf public
 mkdir public
 git worktree prune
-rm -rf .git/worktrees/public/
 
 echo "Checking out master branch into public"
 git worktree add -B master public origin/master
@@ -32,10 +33,9 @@ if [[ $CI ]]; then
 else
   message="publish_to_ghpages.sh"
 fi
-cd public && git add --all && git commit -m $message && git push origin master
+cd public && git add --all && git commit -m "$message" && git push origin master
 
 echo "Cleanup"
 rm -rf public
 mkdir public
 git worktree prune
-rm -rf .git/worktrees/public/
