@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 DIR=$(dirname "$0")
 
@@ -27,4 +27,9 @@ echo "copying CNAME"
 cp CNAME public/
 
 echo "Updating master branch"
-cd public && git add --all && git commit -m "Publishing to master (publish.sh)" && git push origin master
+if [[ $CI ]]; then
+  message="[CI] publish_to_gphages.sh"
+else
+  message="publish_to_ghpages.sh"
+fi
+cd public && git add --all && git commit -m $message && git push origin master
