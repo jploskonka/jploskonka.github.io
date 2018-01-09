@@ -33,3 +33,9 @@ else
   message="publish_to_ghpages.sh"
 fi
 cd public && git add --all && git commit -m $message && git push origin master
+
+echo "Cleanup"
+rm -rf public
+mkdir public
+git worktree prune
+rm -rf .git/worktrees/public/
