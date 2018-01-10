@@ -11,10 +11,10 @@ jobs:
       - image: jguyomard/hugo-builder:0.32
 
     steps:
-      - add_ssh_keys: 
+      - add_ssh_keys:
           fingerprint: 74:c6:05:48:a8:d5:cb:32:e3:9a:fc:e7:67:4a:63:7f
       - run: git config --global user.email bot@example.com
       - run: git config --global user.name CircleCI
 
       - checkout
-      - run: ./publish_to_ghpages.sh
+      - run: .circleci/publish_to_ghpages.sh
