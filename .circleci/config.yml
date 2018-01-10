@@ -11,7 +11,11 @@ jobs:
       - image: jojomi/hugo:0.30.2
 
     steps:
-      - run: apk update && apk upgrade && apk add bash git # TODO: Move this to container
+      - run: 
+          command: |
+            apk update && \
+            apk upgrade && \
+            apk add bash git openssh # TODO: Move this to container
 
       - add_ssh_keys: 
           fingerprint: 74:c6:05:48:a8:d5:cb:32:e3:9a:fc:e7:67:4a:63:7f
