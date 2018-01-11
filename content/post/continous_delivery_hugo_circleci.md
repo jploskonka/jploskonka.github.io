@@ -186,7 +186,7 @@ Beautiful. Now you can easily publish your page from local machine by executing:
 $ ./publish_to_ghpages
 ```
 
-## Automating deployments with CirleCI
+## Automating deployments with CircleCI
 Before going further make sure to setup your project on CircleCI, [here's
 official guide](https://circleci.com/docs/2.0/).
 
