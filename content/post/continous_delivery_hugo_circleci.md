@@ -2,13 +2,12 @@
 title: Continuous delivery of Hugo with Docker, CircleCI and Github Pages.
 description: Guide showing how to setup continuous delivery for Hugo project with Docker and CircleCI.
 keywords: Hugo, gohugo, hugo circleci, hugo continuous delivery, hugo with docker, hugo circleci docker, hugo circle docker
-draft: true
 date: 2018-01-11
 ---
 
 I'm huge fan of [Hugo](https://gohugo.io/) - static site generator written in
 Go. It powers this blog and it became my go to tool for statically generated
-webpages. I also like [Github Pages](https://pages.github.com/) as place to host
+webpages. I like [Github Pages](https://pages.github.com/) as place to host
 such projects for it's simplicity and I'm using Github anyway so I don't need to
 setup separate service for hosting. I'm also big fan of automating boring and
 repetitive tasks and deploying project to Github Pages definitely is not
@@ -16,11 +15,12 @@ fascinating thing to do.
 
 To make things more interesting and pleasant to work with I decided to automate
 deployments so that every time I push some code to Github I get new version
-build and published automatically.
+built and published automatically.
 
-As CI server I chose CircleCI and for keeping development and CI environments
-portable and as similar to each other as possible I'm gonna use Docker. This way
-I won't even need to install Hugo locally :D
+As CI server I chose [CircleCI](https://circleci.com/) and for keeping
+development and CI environments portable and as similar to each other as
+possible I'm gonna use Docker. This way I won't even need to install Hugo
+locally :D
 
 ## tl;dr
 Checkout source code for this blog
@@ -39,28 +39,27 @@ $ docker-compose -v
 # docker-compose version 1.16.1, build 6d1ac21
 ```
 
-I'm also assuming you already have Hugo project to work with, if not then please
-follow [QuickStart guide](https://gohugo.io/getting-started/quick-start/) to
-create one. For instructions on how to setup it with Github pages checkout docs
+I assume you already have Hugo project to work with, if not then please follow
+[QuickStart guide](https://gohugo.io/getting-started/quick-start/) to create
+one. For instructions on how to setup it with Github pages checkout docs
 [here](https://help.github.com/categories/github-pages-basics/).
 
 ## Git branching flow
 I'm using Hugo with User project and because of that Github requires page to be
-published from `master` branch. As main branch I'm using `source` branch and I'm
+published from `master` branch. As main branch I'm using `source` and I'm
 checking out feature branches from it. You can think of it as `master` in
-“standard” git flow. If you're working on Project pages it's common to publish
-page from `gh-pages` branch. For differences between Organisation/User and
-Project Pages checkout [this
+“standard” git flow. If you're working on Project Pages it's common to publish
+website from `gh-pages` branch and use `master` one in “normal” way. For
+differences between Organisation/User and Project Pages checkout [this
 guide](https://help.github.com/articles/user-organization-and-project-pages/).
 
 ## Development environment
 First necessary thing to do is to create easy to use development environment.
-Thankfully there's already well prepared Docker image for hugo which I'm gonna
+Thankfully there's already well prepared Docker image for Hugo which I'm gonna
 use:
 [https://hub.docker.com/r/jguyomard/hugo-builder/](https://hub.docker.com/r/jguyomard/hugo-builder/).
 
-Let's start by adding `docker-compose.yml` file in Hugo project main directory
-or, if you're creating new webpage just put this file into empty directory:
+Let's start by adding `docker-compose.yml` file in Hugo project main directory:
 
 ```yml
 version: '3.4'
@@ -83,12 +82,12 @@ services:
 
 First service (`hugo`) is just Hugo binary which when invoked builds page into
 `public` directory. `/src` is working directory inside docker container where
-all commands are executed so I'm mounting current directory as volume there so
+all commands are executed. I'm mounting current directory as volume there so
 Hugo can see our codebase. Also by setting `entrypoint` to `hugo` you can use
 this service to run any `hugo` command like `hugo help`, `hugo benchmark` etc.
 almost like you had it installed locally.
 
-Second one (`server`) runs hugo development server, binds it to
+Second one (`server`) runs Hugo development server, binds it to
 [`0.0.0.0`](https://en.wikipedia.org/wiki/0.0.0.0) address in order to accept
 requests from outside container.
 
@@ -109,9 +108,9 @@ $ docker-compose up server
 ```
 
 Awesome! With just few lines of code you're now sure that every developer who
-works on project will have exact same version of hugo by using provided
+works on project will have exact same version of Hugo by using provided
 services, page will be always build in the same way and if you for example
-update to new hugo version everyone will know about it by looking at source
+update to new Hugo version everyone will know about it by looking at source
 code.
 
 ## publish_to_ghpages script
@@ -189,8 +188,7 @@ $ ./publish_to_ghpages
 
 ## Automating deployments with CirleCI
 Before going further make sure to setup your project on CircleCI, [here's
-official guide](https://circleci.com/docs/2.0/). You can setup it with sample
-configuration provided by circle or use one from next chapter.
+official guide](https://circleci.com/docs/2.0/).
 
 ### Create SSH key with write access to your repository
 When you setup your project on CircleCI it get's only read access to Github
@@ -212,7 +210,7 @@ check `Allow write access` option.
 
 Then open your CircleCI project settings, go to `SSH Permissions` page, click
 `Add SSH key` and paste your **private** (`circle_key`) key. Enter `github.com`
-into `hostname` field. After you add your key you can see it's fingerprint on
+into `hostname` field. After you added your key you can see it's fingerprint on
 list. Copy it or leave page open - you will need to enter it into circle config.
 
 [Here's](https://circleci.com/docs/1.0/adding-read-write-deployment-key/)
