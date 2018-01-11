@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="description" content="Guide showing how to setup continuous delivery for Hugo project with Docker and CircleCI."/>
+<meta name="keywords" content="Hugo,, gohugo,, hugo, circleci,, hugo, continuous, delivery,, hugo, with, docker,, hugo, circleci, docker,, hugo, circle, docker"/>
+<meta name="google-site-verification" content="pc42v_eKLKWGbM8tou4iLgZa86ks__CmS-HKG0Xmz2Q" />
+
+<title>Continuous delivery of Hugo with Docker, CircleCI and Github Pages. | code’n’roll.it</title>
+
+<link rel="stylesheet" href="https://jploskonka.github.io/css/style.css"/>
+<link rel='stylesheet' href="https://jploskonka.github.io/css/custom.css"/>
+</head>
+<body>
+
+<section class="section">
+  <div class="container">
+    <nav class="nav">
+      <div class="nav-left">
+        <a class="nav-item" href="https://jploskonka.github.io"><h1 class="title is-4">code’n’roll.it</h1></a>
+      </div>
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile"><a class="level-item" href='mailto:ploskonkajakub@gmail.com' target='_blank' rel='noopener'>
+            <span class="icon">
+            </span>
+          </a><a class="level-item" href='https://github.com/jploskonka' target='_blank' rel='noopener'>
+            <span class="icon">
+            </span>
+          </a><a class="level-item" href='https://twitter.com/codenrollit' target='_blank' rel='noopener'>
+            <span class="icon">
+            </span>
+          </a></nav>
+      </div>
+    </nav>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="subtitle is-6 is-pulled-right">
+      
+    </div>
+    <h2 class="subtitle is-6">January 11, 2018</h2>
+    <h1 class="title">Continuous delivery of Hugo with Docker, CircleCI and Github Pages.</h1>
+      
+    <div class="content">
+      
+
+<p>I&rsquo;m huge fan of <a href="https://gohugo.io/" target="_blank">Hugo</a> - static site generator written in
+Go. It powers this blog and it became my go to tool for statically generated
+webpages. I like <a href="https://pages.github.com/" target="_blank">Github Pages</a> as place to host
+such projects for it&rsquo;s simplicity and I&rsquo;m using Github anyway so I don&rsquo;t need to
+setup separate service for hosting. I&rsquo;m also big fan of automating boring and
+repetitive tasks and deploying project to Github Pages definitely is not
+fascinating thing to do.</p>
+
+<p>To make things more interesting and pleasant to work with I decided to automate
+deployments so that every time I push some code to Github I get new version
+built and published automatically.</p>
+
+<p>As CI server I chose <a href="https://circleci.com/" target="_blank">CircleCI</a> and for keeping
+development and CI environments portable and as similar to each other as
+possible I&rsquo;m gonna use Docker. This way I won&rsquo;t even need to install Hugo
+locally :D</p>
+
+<h2 id="tl-dr">tl;dr</h2>
+
+<p>Checkout source code for this blog
+<a href="https://github.com/jploskonka/jploskonka.github.io" target="_blank">here</a>.</p>
+
+<h2 id="dependencies">Dependencies</h2>
+
+<p><a href="https://www.docker.com/community-edition#/download" target="_blank">Docker</a> and
+<a href="https://docs.docker.com/compose/install/" target="_blank">docker-compose</a>.</p>
+
+<p>I&rsquo;m using following versions:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ docker -v
+<span style="color:#999;font-style:italic"># Docker version 17.09.0-ce, build afdb6d4
+</span><span style="color:#999;font-style:italic"></span>
+$ docker-compose -v
+# docker-compose version <span style="color:#3677a9">1</span>.16.1, build 6d1ac21</code></pre></div>
+<p>I assume you already have Hugo project to work with, if not then please follow
+<a href="https://gohugo.io/getting-started/quick-start/" target="_blank">QuickStart guide</a> to create
+one. For instructions on how to setup it with Github pages checkout docs
+<a href="https://help.github.com/categories/github-pages-basics/" target="_blank">here</a>.</p>
+
+<h2 id="git-branching-flow">Git branching flow</h2>
+
+<p>I&rsquo;m using Hugo with User project and because of that Github requires page to be
+published from <code>master</code> branch. As main branch I&rsquo;m using <code>source</code> and I&rsquo;m
+checking out feature branches from it. You can think of it as <code>master</code> in
+“standard” git flow. If you&rsquo;re working on Project Pages it&rsquo;s common to publish
+website from <code>gh-pages</code> branch and use <code>master</code> one in “normal” way. For
+differences between Organisation/User and Project Pages checkout <a href="https://help.github.com/articles/user-organization-and-project-pages/" target="_blank">this
+guide</a>.</p>
+
+<h2 id="development-environment">Development environment</h2>
+
+<p>First necessary thing to do is to create easy to use development environment.
+Thankfully there&rsquo;s already well prepared Docker image for Hugo which I&rsquo;m gonna
+use:
+<a href="https://hub.docker.com/r/jguyomard/hugo-builder/" target="_blank">https://hub.docker.com/r/jguyomard/hugo-builder/</a>.</p>
+
+<p>Let&rsquo;s start by adding <code>docker-compose.yml</code> file in Hugo project main directory:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">version:<span style="color:#666"> </span><span style="color:#ed9d13">&#39;3.4&#39;</span><span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666"></span>services:<span style="color:#666">
+</span><span style="color:#666">  </span>hugo:<span style="color:#666">
+</span><span style="color:#666">    </span>image:<span style="color:#666"> </span>jguyomard/hugo-builder:<span style="color:#3677a9">0.32</span><span style="color:#666">
+</span><span style="color:#666">    </span>entrypoint:<span style="color:#666"> </span>hugo<span style="color:#666">
+</span><span style="color:#666">    </span>volumes:<span style="color:#666">
+</span><span style="color:#666">      </span>-<span style="color:#666"> </span>.:/src<span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666">  </span>server:<span style="color:#666">
+</span><span style="color:#666">    </span>image:<span style="color:#666"> </span>jguyomard/hugo-builder:<span style="color:#3677a9">0.32</span><span style="color:#666">
+</span><span style="color:#666">    </span>command:<span style="color:#666"> </span>hugo<span style="color:#666"> </span>server<span style="color:#666"> </span>--bind<span style="color:#666"> </span><span style="color:#3677a9">0.0</span>.<span style="color:#3677a9">0.0</span><span style="color:#666">
+</span><span style="color:#666">    </span>ports:<span style="color:#666">
+</span><span style="color:#666">      </span>-<span style="color:#666"> </span><span style="color:#ed9d13">&#34;1313:1313&#34;</span><span style="color:#666">
+</span><span style="color:#666">    </span>volumes:<span style="color:#666">
+</span><span style="color:#666">      </span>-<span style="color:#666"> </span>.:/src</code></pre></div>
+<p>First service (<code>hugo</code>) is just Hugo binary which when invoked builds page into
+<code>public</code> directory. <code>/src</code> is working directory inside docker container where
+all commands are executed. I&rsquo;m mounting current directory as volume there so
+Hugo can see our codebase. Also by setting <code>entrypoint</code> to <code>hugo</code> you can use
+this service to run any <code>hugo</code> command like <code>hugo help</code>, <code>hugo benchmark</code> etc.
+almost like you had it installed locally.</p>
+
+<p>Second one (<code>server</code>) runs Hugo development server, binds it to
+<a href="https://en.wikipedia.org/wiki/0.0.0.0" target="_blank"><code>0.0.0.0</code></a> address in order to accept
+requests from outside container.</p>
+
+<p>Services can be used as follows:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#999;font-style:italic"># To build page:
+</span><span style="color:#999;font-style:italic"></span>$ docker-compose run hugo
+
+<span style="color:#999;font-style:italic"># To use hugo commands:
+</span><span style="color:#999;font-style:italic"></span>$ docker-compose run hugo benchmark
+
+<span style="color:#999;font-style:italic"># You can pass command line flags too:
+</span><span style="color:#999;font-style:italic"></span>$ docker-compose run hugo benchmark --help
+
+<span style="color:#999;font-style:italic"># To run development server:
+</span><span style="color:#999;font-style:italic"></span>$ docker-compose up server</code></pre></div>
+<p>Awesome! With just few lines of code you&rsquo;re now sure that every developer who
+works on project will have exact same version of Hugo by using provided
+services, page will be always build in the same way and if you for example
+update to new Hugo version everyone will know about it by looking at source
+code.</p>
+
+<h2 id="publish-to-ghpages-script">publish_to_ghpages script</h2>
+
+<p>OK we can easily build our webpage, now it&rsquo;s time to publish changes to Github
+Pages. Idea here is to checkout <code>master</code> branch into <code>public</code> directory, clean it,
+generate new version of page into it, commit changes to git and finally push
+it to Github.</p>
+
+<p>Create new file called <code>publish_to_ghpages</code> in project main directory with
+following code in it:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#cd2828;font-weight:bold">#!/usr/bin/env bash
+</span><span style="color:#cd2828;font-weight:bold"></span>
+<span style="color:#999;font-style:italic"># Exit script if any command in it happens to fail
+</span><span style="color:#999;font-style:italic"></span><span style="color:#24909d">set</span> -e
+
+<span style="color:#999;font-style:italic"># Prevent accidentally publishing uncommited changes
+</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">if</span> [[ <span style="color:#6ab825;font-weight:bold">$(</span>git status -s<span style="color:#6ab825;font-weight:bold">)</span> ]]
+<span style="color:#6ab825;font-weight:bold">then</span>
+    <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;The working directory is dirty. Please commit any pending changes.&#34;</span>
+    <span style="color:#24909d">exit</span> <span style="color:#3677a9">1</span>;
+<span style="color:#6ab825;font-weight:bold">fi</span>
+
+<span style="color:#999;font-style:italic"># Remove public directory and clean information about git worktrees
+</span><span style="color:#999;font-style:italic"></span><span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Deleting old publication&#34;</span>
+rm -rf public
+git worktree prune
+
+<span style="color:#999;font-style:italic"># Checkout current master branch into public directory
+</span><span style="color:#999;font-style:italic"></span><span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Checking out master branch into public&#34;</span>
+git worktree add -B master public origin/master
+
+<span style="color:#999;font-style:italic"># After checkout you&#39;ll have current page version, remove it
+</span><span style="color:#999;font-style:italic"># before building new one
+</span><span style="color:#999;font-style:italic"></span><span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Removing existing files&#34;</span>
+rm -rf public/*
+
+<span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Generating site into public directory&#34;</span>
+docker-compose run hugo
+
+<span style="color:#999;font-style:italic"># If you&#39;re not using custom domain or don&#39;t need CNAME
+</span><span style="color:#999;font-style:italic"># file you can just remove those 2 lines.
+</span><span style="color:#999;font-style:italic"></span><span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Copying CNAME&#34;</span>
+cp CNAME public/
+
+<span style="color:#999;font-style:italic"># Set timestamp to time in miliseconds from epoch
+</span><span style="color:#999;font-style:italic"># It&#39;s gonna be used to tag release.
+</span><span style="color:#999;font-style:italic"></span><span style="color:#40ffff">timestamp</span>=<span style="color:#6ab825;font-weight:bold">$(</span>date +%s%3N<span style="color:#6ab825;font-weight:bold">)</span>
+<span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Publishing version </span><span style="color:#40ffff">$timestamp</span><span style="color:#ed9d13">&#34;</span>
+
+<span style="color:#999;font-style:italic"># Commit everything in public dir, push changes and add git tag to it.
+</span><span style="color:#999;font-style:italic"></span><span style="color:#24909d">cd</span> public &amp;&amp; <span style="color:#ed9d13">\
+</span><span style="color:#ed9d13"></span>  git add --all &amp;&amp; <span style="color:#ed9d13">\
+</span><span style="color:#ed9d13"></span>  git commit -m <span style="color:#ed9d13">&#34;publish_to_ghpages&#34;</span> &amp;&amp; <span style="color:#ed9d13">\
+</span><span style="color:#ed9d13"></span>  git tag <span style="color:#ed9d13">&#34;</span><span style="color:#40ffff">$timestamp</span><span style="color:#ed9d13">&#34;</span> &amp;&amp; <span style="color:#ed9d13">\
+</span><span style="color:#ed9d13"></span>  git push origin master &amp;&amp; <span style="color:#ed9d13">\
+</span><span style="color:#ed9d13"></span>  git push origin <span style="color:#ed9d13">&#34;</span><span style="color:#40ffff">$timestamp</span><span style="color:#ed9d13">&#34;</span>
+
+
+<span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Published version </span><span style="color:#40ffff">$timestamp</span><span style="color:#ed9d13">&#34;</span></code></pre></div>
+<p>Save file, exit and mark it as executable file:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ chmod +x ./publish_to_ghpages</code></pre></div>
+<p>Beautiful. Now you can easily publish your page from local machine by executing:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ ./publish_to_ghpages</code></pre></div>
+<h2 id="automating-deployments-with-cirleci">Automating deployments with CirleCI</h2>
+
+<p>Before going further make sure to setup your project on CircleCI, <a href="https://circleci.com/docs/2.0/" target="_blank">here&rsquo;s
+official guide</a>.</p>
+
+<h3 id="create-ssh-key-with-write-access-to-your-repository">Create SSH key with write access to your repository</h3>
+
+<p>When you setup your project on CircleCI it get&rsquo;s only read access to Github
+repository. While it&rsquo;s sufficient in most cases this time we want to be able to
+also push to this repository from inside a build job. To allow CircleCI to do it
+you need to create additional SSH key with write access to repository.</p>
+
+<p>Generate new key with:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ ssh-keygen -t rsa -b <span style="color:#3677a9">4096</span> -N <span style="color:#ed9d13">&#39;&#39;</span> -f ./circle_key</code></pre></div>
+<p>This will create <code>circle_key</code> and <code>circle_key.pub</code> file in current directory.
+Now follow <a href="https://developer.github.com/v3/guides/managing-deploy-keys/#setup-2" target="_blank">this
+guide</a> and
+add <strong>public</strong> (<code>circle_key.pub</code>) key to your Github repository. Make sure to
+check <code>Allow write access</code> option.</p>
+
+<p>Then open your CircleCI project settings, go to <code>SSH Permissions</code> page, click
+<code>Add SSH key</code> and paste your <strong>private</strong> (<code>circle_key</code>) key. Enter <code>github.com</code>
+into <code>hostname</code> field. After you added your key you can see it&rsquo;s fingerprint on
+list. Copy it or leave page open - you will need to enter it into circle config.</p>
+
+<p><a href="https://circleci.com/docs/1.0/adding-read-write-deployment-key/" target="_blank">Here&rsquo;s</a>
+CircleCI docs on this topic.</p>
+
+<p>You can now safely remove <code>circle_key</code> and <code>circle_key.pub</code> files or save them
+in safe location if you want. <strong>Don&rsquo;t commit those files to your repository.</strong></p>
+
+<h3 id="configuration">Configuration</h3>
+
+<p>CircleCI uses configuration stored in <code>.circleci/config.yml</code> file. Let&rsquo;s create
+it and add simple config:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">version:<span style="color:#666"> </span><span style="color:#3677a9">2</span><span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666"></span><span style="color:#999;font-style:italic"># Publish only changes pushed to `source` branch.</span><span style="color:#666">
+</span><span style="color:#666"></span>general:<span style="color:#666">
+</span><span style="color:#666">  </span>branches:<span style="color:#666">
+</span><span style="color:#666">    </span>only:<span style="color:#666">
+</span><span style="color:#666">      </span>-<span style="color:#666"> </span>source<span style="color:#666"> </span><span style="color:#999;font-style:italic"># Put `master` here if it&#39;s your main branch</span><span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666"></span>jobs:<span style="color:#666">
+</span><span style="color:#666">  </span>build:<span style="color:#666">
+</span><span style="color:#666">    </span>docker:<span style="color:#666">
+</span><span style="color:#666">      </span><span style="color:#999;font-style:italic"># Set build environment to use same docker image as local docker-compose</span><span style="color:#666">
+</span><span style="color:#666">      </span>-<span style="color:#666"> </span>image:<span style="color:#666"> </span>jguyomard/hugo-builder:<span style="color:#3677a9">0.32</span><span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666">    </span>steps:<span style="color:#666">
+</span><span style="color:#666">      </span><span style="color:#999;font-style:italic"># Inject created SSH key into container</span><span style="color:#666">
+</span><span style="color:#666">      </span><span style="color:#999;font-style:italic"># Remember key added before? Here&#39;s place to put it&#39;s fingerprint</span><span style="color:#666">
+</span><span style="color:#666">      </span>-<span style="color:#666"> </span>add_ssh_keys:<span style="color:#666">
+</span><span style="color:#666">          </span>fingerprint:<span style="color:#666"> </span>YOUR_SSH_KEY_FINGERPRINT<span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666">      </span><span style="color:#999;font-style:italic"># Configure git to be able to push</span><span style="color:#666">
+</span><span style="color:#666">      </span>-<span style="color:#666"> </span>run:<span style="color:#666"> </span>git<span style="color:#666"> </span>config<span style="color:#666"> </span>--global<span style="color:#666"> </span>user.email<span style="color:#666"> </span>bot@example.com<span style="color:#666">
+</span><span style="color:#666">      </span>-<span style="color:#666"> </span>run:<span style="color:#666"> </span>git<span style="color:#666"> </span>config<span style="color:#666"> </span>--global<span style="color:#666"> </span>user.name<span style="color:#666"> </span>CircleCI<span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666">      </span><span style="color:#999;font-style:italic"># Checkout source code</span><span style="color:#666">
+</span><span style="color:#666">      </span>-<span style="color:#666"> </span>checkout<span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666">      </span><span style="color:#999;font-style:italic"># Run publish script :-)</span><span style="color:#666">
+</span><span style="color:#666">      </span>-<span style="color:#666"> </span>run:<span style="color:#666"> </span>.circleci/publish_to_ghpages</code></pre></div>
+<p>Now I suggest to move previously created <code>publish_to_ghpages</code> script to
+<code>.circleci</code> directory. I like to do it to emphasize that this script should be
+used only via CI server and not from local machine.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ mv publish_to_ghpages ./.circleci</code></pre></div>
+<h3 id="tweak-publish-to-ghpages">Tweak publish_to_ghpages</h3>
+
+<p>Last thing left is to update publish script a bit to work with Circle:</p>
+
+<h4 id="shebang">Shebang</h4>
+
+<p>Update shebang in first line from <code>#!/usr/bin/env bash</code> to <code>#!/bin/sh</code>.  There&rsquo;s
+no bash in container I&rsquo;m using so circle cannot use it too. Script is simple
+enough that it doesn&rsquo;t make much difference to use <code>sh</code>. Please remember though:
+<a href="http://mywiki.wooledge.org/BashGuide/CommandsAndArguments#Scripts" target="_blank"><strong>sh is not
+bash</strong></a>.</p>
+
+<h4 id="no-docker-compose">No docker-compose</h4>
+
+<p>Instead of using <code>docker-compose run hugo</code> to build page we need to use just
+<code>hugo</code> command. Because script is run inside docker container it&rsquo;s safe to do
+that, plus we can&rsquo;t use docker-compose commands inside it anyway. So this part:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Generating site into public directory&#34;</span>
+docker-compose run hugo</code></pre></div>
+<p>becomes this:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Generating site into public directory&#34;</span>
+hugo</code></pre></div>
+<h4 id="prevent-building-master-branch">Prevent building master branch</h4>
+
+<p>Even though we set that we want to build only <code>source</code> branch CircleCI would
+still try to build <code>master</code>. It happens because there&rsquo;s no <code>.circle</code> directory
+present in built page so those builds will always fail. To prevent that just
+copy it into <code>public</code> after building page, for example after <code>CNAME</code> section:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Copying circleCI config&#34;</span>
+cp -R .circleci public/</code></pre></div>
+<h4 id="final-publish-to-ghpages-script">Final publish_to_ghpages script</h4>
+
+<p>After tweaks our file looks like this:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#cd2828;font-weight:bold">#!/bin/sh
+</span><span style="color:#cd2828;font-weight:bold"></span>
+<span style="color:#24909d">set</span> -e
+
+<span style="color:#6ab825;font-weight:bold">if</span> [[ <span style="color:#6ab825;font-weight:bold">$(</span>git status -s<span style="color:#6ab825;font-weight:bold">)</span> ]]
+<span style="color:#6ab825;font-weight:bold">then</span>
+    <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;The working directory is dirty. Please commit any pending changes.&#34;</span>
+    <span style="color:#24909d">exit</span> <span style="color:#3677a9">1</span>;
+<span style="color:#6ab825;font-weight:bold">fi</span>
+
+<span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Deleting old publication&#34;</span>
+rm -rf public
+git worktree prune
+
+<span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Checking out master branch into public&#34;</span>
+git worktree add -B master public origin/master
+
+<span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Removing existing files&#34;</span>
+rm -rf public/*
+
+<span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Generating site&#34;</span>
+hugo
+
+<span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Copying CNAME&#34;</span>
+cp CNAME public/
+
+<span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Copying circleCI config&#34;</span>
+cp -R .circleci public/
+
+<span style="color:#40ffff">timestamp</span>=<span style="color:#6ab825;font-weight:bold">$(</span>date +%s%3N<span style="color:#6ab825;font-weight:bold">)</span>
+
+<span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Publishing version </span><span style="color:#40ffff">$timestamp</span><span style="color:#ed9d13">&#34;</span>
+<span style="color:#24909d">cd</span> public &amp;&amp; <span style="color:#ed9d13">\
+</span><span style="color:#ed9d13"></span>  git add --all &amp;&amp; <span style="color:#ed9d13">\
+</span><span style="color:#ed9d13"></span>  git commit -m <span style="color:#ed9d13">&#34;publish_to_ghpages&#34;</span> &amp;&amp; <span style="color:#ed9d13">\
+</span><span style="color:#ed9d13"></span>  git tag <span style="color:#ed9d13">&#34;</span><span style="color:#40ffff">$timestamp</span><span style="color:#ed9d13">&#34;</span> &amp;&amp; <span style="color:#ed9d13">\
+</span><span style="color:#ed9d13"></span>  git push origin master &amp;&amp; <span style="color:#ed9d13">\
+</span><span style="color:#ed9d13"></span>  git push origin <span style="color:#ed9d13">&#34;</span><span style="color:#40ffff">$timestamp</span><span style="color:#ed9d13">&#34;</span></code></pre></div>
+<h2 id="done">Done!</h2>
+
+<p>That&rsquo;s it. Now whenever you push commits to your <code>source</code> branch it will trigger
+CircleCI build to publish your changes automatically. <a href="https://www.youtube.com/watch?v=0p_1QSUsbsM" target="_blank">It&rsquo;s a kind of
+magic!</a></p>
+
+<p>Your sample workflow can look like this:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#999;font-style:italic"># Open your project
+</span><span style="color:#999;font-style:italic"></span>$ <span style="color:#24909d">cd</span> your_project
+
+<span style="color:#999;font-style:italic"># Make sure you&#39;re on main branch
+</span><span style="color:#999;font-style:italic"></span>$ git checkout <span style="color:#24909d">source</span>
+
+<span style="color:#999;font-style:italic"># Checkout to new feature branch
+</span><span style="color:#999;font-style:italic"></span>$ git checkout -b my_new_post
+
+<span style="color:#999;font-style:italic"># [ ... ] Do some changes, create post, whatever
+</span><span style="color:#999;font-style:italic"></span>
+<span style="color:#999;font-style:italic"># Commit all your changes
+</span><span style="color:#999;font-style:italic"></span>$ git commit -am <span style="color:#ed9d13">&#39;Just finished an amazing article&#39;</span>
+
+<span style="color:#999;font-style:italic"># Go back to main branch
+</span><span style="color:#999;font-style:italic"></span>$ git checkout <span style="color:#24909d">source</span>
+
+<span style="color:#999;font-style:italic"># Merge feature branch into main one
+</span><span style="color:#999;font-style:italic"></span>$ git merge my_new_post
+
+<span style="color:#999;font-style:italic"># Push changes!
+</span><span style="color:#999;font-style:italic"></span>$ git push</code></pre></div>
+<p>Of course you can merge changes into your branch in any way you like it (for
+example with Github Pull Request) or work straight from your main branch (it&rsquo;s
+usually not a good idea).</p>
+
+<p>Hope you enjoyed reading this article and find it helpful :-) Or maybe you&rsquo;re
+automating your Hugo builds in different way? Let me know in comments.</p>
+
+<h3 id="resources">Resources</h3>
+
+<ul>
+<li><a href="https://circleci.com/docs/2.0/" target="_blank">CircleCI docs</a></li>
+<li><a href="https://help.github.com/categories/github-pages-basics/" target="_blank">Github Pages docs</a></li>
+<li><a href="https://gohugo.io/documentation/" target="_blank">Hugo docs</a></li>
+</ul>
+
+    </div>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <aside><div id="disqus_thread"></div></aside>
+    <script type="text/javascript">
+      var disqus_shortname = 'codenroll-it';
+      (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container has-text-centered">
+    <p>&copy; <a href="https://github.com/jploskonka">jploskonka</a> 2017</p>
+    
+      <p>Powered by <a href="https://gohugo.io/">Hugo</a> &amp; <a href="https://github.com/ribice/kiss">Kiss</a>.</p>
+    
+  </div>
+</section>
+
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-89853504-1', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+</html>
