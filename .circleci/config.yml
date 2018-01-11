@@ -17,4 +17,4 @@ jobs:
       - run: git config --global user.name CircleCI
 
       - checkout
-      - run: .circleci/publish_to_ghpages.sh
+      - run: .circleci/publish_to_ghpages
