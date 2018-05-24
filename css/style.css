@@ -146,7 +146,7 @@ to {
   text-rendering: optimizeLegibility;
 }
 body, button, input, select, textarea {
-  font-family: "游ゴシック", YuGothic, "ヒラギノ角ゴ Pro", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, sans-serif;
+  font-family: Helvetica, sans-serif;
 }
 code, pre {
   -moz-osx-font-smoothing: auto;
