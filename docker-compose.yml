@@ -3,7 +3,7 @@ version: '3.3'
 services:
   hugo:
     image: jguyomard/hugo-builder:0.32
-    entrypoint: hugo
+    entrypoint: hugo --config ./config-release.toml
     volumes:
       - .:/src
 

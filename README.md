@@ -24,3 +24,7 @@ $ docker-compose run hugo
 
 ## Dependencies
 - Docker & docker-compose
+
+## Deployment
+Project is setup to automatically deploy `source` branch with CircleCI. Just
+merge changes to it and it will soon be deployed.
