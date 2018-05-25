@@ -19,7 +19,7 @@ echo "Removing existing files"
 rm -rf public/*
 
 echo "Generating site"
-hugo
+hugo --config ./config-release.toml
 
 echo "Copying CNAME"
 cp CNAME public/
