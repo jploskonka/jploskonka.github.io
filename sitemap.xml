@@ -3,11 +3,6 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://jploskonka.github.io/post/fruity-guide-into-web-testing-salad/</loc>
-    <lastmod>2018-05-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://jploskonka.github.io/post/continous_delivery_hugo_circleci/</loc>
     <lastmod>2018-01-11T00:00:00+00:00</lastmod>
   </url>
@@ -24,7 +19,7 @@
   
   <url>
     <loc>https://jploskonka.github.io/post/</loc>
-    <lastmod>2018-05-24T00:00:00+00:00</lastmod>
+    <lastmod>2018-01-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -35,7 +30,7 @@
   
   <url>
     <loc>https://jploskonka.github.io/</loc>
-    <lastmod>2018-05-24T00:00:00+00:00</lastmod>
+    <lastmod>2018-01-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

@@ -7,19 +7,10 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>&amp;copy; &lt;a href=&#34;https://github.com/jploskonka&#34;&gt;jploskonka&lt;/a&gt; 2017</copyright>
-    <lastBuildDate>Thu, 24 May 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 11 Jan 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://jploskonka.github.io/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Fruity guide into web testing salad</title>
-      <link>https://jploskonka.github.io/post/fruity-guide-into-web-testing-salad/</link>
-      <pubDate>Thu, 24 May 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://jploskonka.github.io/post/fruity-guide-into-web-testing-salad/</guid>
-      <description>Unit testing, end to end testing, integration testing, manual, automated, smoke, monkey&amp;hellip; That’s quite a big list of levels and ways to test software. It’s hard to even list them all not even starting to get into details. Why is testing so complex? Why there’s so much ways to achieve so simple on first sight thing like making sure your system works OK? In the end you just want to enter your website and it expect it to work.</description>
-    </item>
     
     <item>
       <title>Continuous delivery of Hugo with Docker, CircleCI and Github Pages.</title>
