@@ -3,6 +3,7 @@ title: Fruity guide into web testing salad
 description: Comprehensive guide into web testing terminology, theory and technologies overview.
 keywords: test automation, end to end testing, web testing, internet testing, test, quality assurance
 date: 2018-05-24
+draft: true
 ---
 
 Unit testing, end to end testing, integration testing, manual, automated, smoke,
