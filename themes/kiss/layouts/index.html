@@ -12,6 +12,9 @@
       </div>
       <h2 class="subtitle is-6">{{ .Date.Format "January 2, 2006" }}</h2>
       <h1 class="title"><a href="{{ .Permalink }}">{{ .Title }}</a>{{ if .Draft }} ::Draft{{ end }}</h1>
+      {{ $cover := .Resources.GetMatch "cover.jpg" }}
+      {{ $cover_resized := $cover.Fill "1920x800" }}
+      <img src="{{ $cover_resized.RelPermalink }}" />
       <div class="content">
         {{ .Summary | plainify | safeHTML }}
         {{ if .Truncated }}

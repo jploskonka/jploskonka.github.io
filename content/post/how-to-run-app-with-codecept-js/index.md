@@ -4,6 +4,7 @@ description: A short guide on how to automatically run local application before 
 keywords: codeceptjs tutorial, codeceptjs bootstrap, codeceptjs before tests, codeceptjs run application, codeceptjs how to run app, how to run app with codeceptjs, codeceptjs testing, acceptance testing with codeceptjs, testing, test, javascript
 date: 2017-11-21
 ---
+<a style="background-color:black;color:white;text-decoration:none;padding:4px 6px;font-family:-apple-system, BlinkMacSystemFont, &quot;San Francisco&quot;, &quot;Helvetica Neue&quot;, Helvetica, Ubuntu, Roboto, Noto, &quot;Segoe UI&quot;, Arial, sans-serif;font-size:12px;font-weight:bold;line-height:1.2;display:inline-block;border-radius:3px" href="https://unsplash.com/@m_b_m?utm_medium=referral&amp;utm_campaign=photographer-credit&amp;utm_content=creditBadge" target="_blank" rel="noopener noreferrer" title="Download free do whatever you want high-resolution photos from M. B. M."><span style="display:inline-block;padding:2px 3px"><svg xmlns="http://www.w3.org/2000/svg" style="height:12px;width:auto;position:relative;vertical-align:middle;top:-2px;fill:white" viewBox="0 0 32 32"><title>unsplash-logo</title><path d="M10 9V0h12v9H10zm12 5h10v18H0V14h10v9h12v-9z"></path></svg></span><span style="display:inline-block;padding:2px 3px">M. B. M.</span></a>
 
 In my last post I was writing about [testing TodoMVC application with
 CodeceptJS](http://codenroll.it/acceptance-testing-with-codecept-js/). For sake
