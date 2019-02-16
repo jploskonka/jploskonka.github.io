@@ -1,3 +1,16 @@
-﻿a {
+:root {
+  --c-dark: #002C2B;
+  --c-highlight: #FF3D00;
+  --c-lemon: #FFBC11;
+  --c-light-green: #0A837F;
+  --c-green: #076461;
+}
+
+body {
+  color: var(--c-dark);
+}
+
+a {
   text-decoration: none;
+  color: var(--c-green);
 }
